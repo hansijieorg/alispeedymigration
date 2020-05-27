@@ -1,0 +1,237 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create VPC Resource
+Parameters:
+  VpcCidr:
+    Description: The VPC CIDR
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 192.168.0.0/24
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  SubnetCidr1:
+    Description: The Subnet CIDR
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 192.168.0.0/26
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  SubnetCidr2:
+    Description: The Subnet CIDR
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 192.168.0.64/26
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  DBName:
+    Default: wordpressdb
+    Description: The WordPress database name
+    Type: String
+    MinLength: '1'
+    MaxLength: '64'
+    AllowedPattern: "[a-zA-Z][a-zA-Z0-9]*"
+    ConstraintDescription: must begin with a letter and contain only alphanumeric
+      characters.
+  DBUser:
+    NoEcho: 'true'
+    Description: The WordPress database admin account username
+    Type: String
+    MinLength: '1'
+    MaxLength: '16'
+    AllowedPattern: "[a-zA-Z][a-zA-Z0-9]*"
+    ConstraintDescription: must begin with a letter and contain only alphanumeric
+      characters.
+  DBPassword:
+    NoEcho: 'true'
+    Description: The WordPress database admin account password
+    Type: String
+    MinLength: '8'
+    MaxLength: '41'
+    AllowedPattern: "[a-zA-Z0-9_\\-]*"
+    ConstraintDescription: must contain only alphanumeric characters.
+Resources:
+  BCDRVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: false
+      InstanceTenancy: default
+      Tags:
+      - Key: Name
+        Value: BCDRVPC
+  WordpressSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: 'AWS::Region'
+      CidrBlock: !Ref SubnetCidr1
+      Tags:
+        - Key: Name
+          Value: BCDRDMZSubnet
+      VpcId: !Ref BCDRVPC
+  WordpressSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: 'AWS::Region'
+      CidrBlock: !Ref SubnetCidr2
+      Tags:
+        - Key: Name
+          Value: BCDRPrivateSubnet
+      VpcId: !Ref BCDRVPC
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: WordpressInternetGateway
+  VPCGatewayAttach:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref BCDRVPC
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref BCDRVPC
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable
+  WordPressSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref WordpressSubnet1
+  WordPressSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref WordpressSubnet2
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP access via port 80 locked down to the load balancer
+        + SSH access
+      VpcId: !Ref BCDRVPC
+      SecurityGroupIngress:
+      - IpProtocol: '-1'
+        FromPort: '-1'
+        ToPort: '-1'
+        CidrIp: 192.168.0.0/24
+      - IpProtocol: '-1'
+        FromPort: '-1'
+        ToPort: '-1'
+        CidrIp: 10.0.0.0/24
+  BasionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable Basion Login from Internet
+      VpcId: !Ref BCDRVPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '3389'
+        ToPort: '3389'
+        CidrIp: '0.0.0.0/0'
+  SGDataBaseLogin:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: SG-Database
+      GroupDescription: Security Group for login DataBase
+      SecurityGroupIngress:
+        - CidrIp: 10.0.0.0/24
+          Description: MYSQL Login
+          FromPort: 3306
+          IpProtocol: TCP
+          ToPort: 3306
+        - CidrIp: 192.168.0.0/24
+          Description: MYSQL Login
+          FromPort: 3306
+          IpProtocol: TCP
+          ToPort: 3306
+      Tags:
+        - Key: Name
+          Value: SecurityGroup For Database Login
+      VpcId: !Ref BCDRVPC
+  DMSReplicationInstance:
+    Type: "AWS::DMS::ReplicationInstance"
+    Properties:
+      AllocatedStorage: 100
+      ReplicationInstanceClass: dms.c4.large
+      ReplicationInstanceIdentifier: bcdrdms
+      ReplicationSubnetGroupIdentifier: !Ref ReplicationSubnetGroup
+      Tags:
+        - Key: Name
+          Value: bcdr-dms-replicationinstance
+      VpcSecurityGroupIds:
+        - !Ref SGDataBaseLogin
+        - !Ref WebServerSecurityGroup
+  ReplicationSubnetGroup:
+    Type: "AWS::DMS::ReplicationSubnetGroup"
+    Properties:
+      ReplicationSubnetGroupDescription: DMSSubnetsGroup
+      ReplicationSubnetGroupIdentifier: DMSSubnetsGroup
+      SubnetIds:
+        - !Ref WordpressSubnet1
+        - !Ref WordpressSubnet2
+      Tags:
+        - Key: Name
+          Value: RepInstanceSubnetGroup
+  DBParameterGroup:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: DBParameterGroup for wordpress
+      Family: mysql5.7
+      Parameters:
+        character_set_client: utf8
+        character_set_connection: utf8
+        character_set_database: utf8
+        character_set_filesystem: utf8
+        character_set_results: utf8
+        character_set_server: utf8
+        collation_connection: utf8_general_ci
+        collation_server: utf8_general_ci
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: wordpress db subnet group
+      DBSubnetGroupName: string
+      SubnetIds:
+        - !Ref WordpressSubnet1
+        - !Ref WordpressSubnet2
+  DataBase:
+    DependsOn:
+      - DBParameterGroup
+      - DBSubnetGroup
+    DeletionPolicy: Delete
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: 20
+      DBInstanceClass: db.r4.large
+      DBInstanceIdentifier: wordpress
+      DBName: !Ref DBName
+      DBParameterGroupName: !Ref DBParameterGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      DeleteAutomatedBackups: False
+      DeletionProtection: False
+      Engine: mysql
+      EngineVersion: 5.7.26
+      MasterUserPassword: !Ref DBPassword
+      MasterUsername: !Ref DBUser
+      MultiAZ: False
+      PubliclyAccessible: False
+      StorageType: gp2
+      Tags:
+        - Key: Name
+          Value: wordpress-database
+      VPCSecurityGroups:
+        - !Ref SGDataBaseLogin
