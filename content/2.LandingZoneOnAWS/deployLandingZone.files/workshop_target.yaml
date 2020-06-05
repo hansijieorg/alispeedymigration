@@ -51,7 +51,81 @@ Parameters:
     MaxLength: '41'
     AllowedPattern: "[a-zA-Z0-9_\\-]*"
     ConstraintDescription: must contain only alphanumeric characters.
+  KeyPairName:
+    Description: Name of SSH KeyPair
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: Provide the name of an existing SSH key pair
+  AWSAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2  
+  EC2InstancePrivateIP:
+    Description: Private IP Address
+    Type: String
+    Default: 192.168.0.5
 Resources:
+  BastionVPNSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    DependsOn: BCDRVPC
+    Properties:
+      GroupDescription: BastionHost - 22/ssh, 500/4500/openvpn
+      VpcId: !Ref BCDRVPC
+      Tags:
+        - Key: Name
+          Value: SGBastionVPN
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          Description: for ssh
+        - IpProtocol: udp
+          FromPort: 500
+          ToPort: 500
+          CidrIp: 0.0.0.0/0
+          Description: for openvpn
+        - IpProtocol: udp
+          FromPort: 4500
+          ToPort: 4500
+          CidrIp: 0.0.0.0/0
+          Description: for openvpn
+  InstanceNetworkInterface:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      Description: ENI
+      SubnetId: !Ref WordpressSubnet1
+      PrivateIpAddress: !Ref EC2InstancePrivateIP
+      GroupSet: 
+        - !Ref BastionVPNSecurityGroup
+      Tags:
+        - Key: Name
+          Value: Bastion ENI
+
+  BastionVPNEC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: t3.micro
+      ImageId: !Ref AWSAmiId
+      KeyName: !Ref KeyPairName
+      NetworkInterfaces:
+        - NetworkInterfaceId: !Ref InstanceNetworkInterface
+          DeviceIndex: 0
+      SourceDestCheck: true
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeType: gp2
+            VolumeSize: 20
+            DeleteOnTermination: true
+      Tags:
+        - Key: Name
+          Value: BastionVPNInstance
+      UserData: 
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # Updates & Install needed programs
+          yum update -y 
+
+
   BCDRVPC:
     Type: AWS::EC2::VPC
     Properties:
@@ -61,7 +135,7 @@ Resources:
       InstanceTenancy: default
       Tags:
       - Key: Name
-        Value: BCDRVPC
+        Value: ALIMIGRATIONVPC
   WordpressSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -70,9 +144,10 @@ Resources:
         - !GetAZs
           Ref: 'AWS::Region'
       CidrBlock: !Ref SubnetCidr1
+      MapPublicIpOnLaunch : true
       Tags:
         - Key: Name
-          Value: BCDRDMZSubnet
+          Value: ALIMIGRATIONDMZSubnet
       VpcId: !Ref BCDRVPC
   WordpressSubnet2:
     Type: AWS::EC2::Subnet
@@ -84,7 +159,7 @@ Resources:
       CidrBlock: !Ref SubnetCidr2
       Tags:
         - Key: Name
-          Value: BCDRPrivateSubnet
+          Value: ALIMIGRATIONPrivateSubnet
       VpcId: !Ref BCDRVPC
   InternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -101,6 +176,7 @@ Resources:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref BCDRVPC
+
   PublicRoute:
     Type: AWS::EC2::Route
     Properties:
@@ -112,11 +188,53 @@ Resources:
     Properties:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref WordpressSubnet1
+
+
+
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref BCDRVPC
   WordPressSubnet2RouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref PublicRouteTable
+      RouteTableId: !Ref PrivateRouteTable
       SubnetId: !Ref WordpressSubnet2
+  # NatGateway
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+        - EIP
+        - AllocationId
+      SubnetId: !Ref WordpressSubnet1
+      Tags:
+      - Key: Name
+        Value: NatGateway
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  NatRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  VPNInstanceRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 10.0.0.0/24
+      InstanceId: !Ref BastionVPNEC2Instance
+
+
+
+
   WebServerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -162,6 +280,9 @@ Resources:
         - Key: Name
           Value: SecurityGroup For Database Login
       VpcId: !Ref BCDRVPC
+
+
+# DMS
   DMSReplicationInstance:
     Type: "AWS::DMS::ReplicationInstance"
     Properties:
@@ -186,6 +307,8 @@ Resources:
       Tags:
         - Key: Name
           Value: RepInstanceSubnetGroup
+
+# RDS
   DBParameterGroup:
     Type: AWS::RDS::DBParameterGroup
     Properties:
@@ -235,3 +358,4 @@ Resources:
           Value: wordpress-database
       VPCSecurityGroups:
         - !Ref SGDataBaseLogin
+
