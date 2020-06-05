@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "deployment-2048"
+  namespace: "2048-game<seq>"
+spec:
+  selector:
+    matchLabels:
+      app: "2048"
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "2048"
+    spec:
+      containers:
+      - image: registry.cn-zhangjiakou.aliyuncs.com/ackrepo/prodrepo:2048-game
+        imagePullPolicy: Always
+        name: "2048"
+        ports:
+        - containerPort: 80
