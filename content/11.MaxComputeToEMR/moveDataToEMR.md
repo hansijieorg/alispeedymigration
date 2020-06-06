@@ -10,7 +10,7 @@ weight: 113
 
 1.登录到事先安装好了DataX工具的Linux EC2工作服务器，编辑已经准备好的odps2hdfs.json文件，并在如下所示的部分修改为符合你的信息：
 ```bash
-vi odps2hdfs.json
+vi ~/odps2hdfs.json
 {
     "job": {
         "setting": {
