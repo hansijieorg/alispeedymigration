@@ -1,7 +1,7 @@
 ﻿---
 title: "清理环境 (可选)"
 chapter: false
-weight: 110
+weight: 120
 ---
 
 ## 清理环境
