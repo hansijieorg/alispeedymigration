@@ -1,12 +1,12 @@
 ﻿---
-title: "启动容灾环境中的应用服务器"
+title: "割接并发布应用服务器"
 chapter: false
 weight: 82
 ---
 
-## 通过CloudEndure把容灾环境的应用服务器启动起来
+## 通过CloudEndure割接并发布应用服务器
 
-本次实验，会把容灾环境里的应用服务器启动起来。步骤如下：
+本次实验，会割接并发布应用服务器。步骤如下：
 
 1.配置蓝图(Blueprint)。到CloudEndure主界面，选择左边的Machines菜单选项，点击名为"WordPress APP"服务器，进入 Blueprint（蓝图）界面设置目标实例的配置信息：
 
