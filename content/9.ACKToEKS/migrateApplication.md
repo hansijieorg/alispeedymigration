@@ -76,3 +76,4 @@ kubectl get svc -n 2048-game<编号>
 ![](/images/ACKToEKS/restoreOnEKSWithALB.png)
 
 打开浏览器，并在地址来里输入该ALB的名称，确认能打开应用系统，从而完成了ACK上的应用到EKS上的迁移。
+![](/images/ACKToEKS/2048.png)
