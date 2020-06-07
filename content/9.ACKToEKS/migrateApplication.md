@@ -12,6 +12,8 @@ weight: 94
 ```bash
 kubectl config get-contexts
 ```
+![](/images/ACKToEKS/ack-get-contexts.png)
+
 从以上命令的输出中，可以找到ACK集群的namespace，其由一串数字以及一些随机字符串组成，类似为：218875390585367918-cb3e834a2fff540459ff8341d60da0d54
 然后切换到到该ACK集群：
 ```bash
