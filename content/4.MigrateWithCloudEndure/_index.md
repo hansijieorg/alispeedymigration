@@ -1,10 +1,10 @@
 ﻿---
-title: "使用CloudEndure对应用服务器进行容灾"
+title: "使用CloudEndure对应用服务器进行迁移"
 chapter: false
 weight: 40
 ---
 
-## 使用CloudEndure对应用服务器进行容灾
+## 使用CloudEndure对应用服务器进行迁移
 
 对于从阿里云迁移到AWS 宁夏区域来说，可以通过使用CloudEndure 容灾的方式，其过程如下所示：
 ![](/images/SyncWithCloudEndure/CE-workflow-ali.png)

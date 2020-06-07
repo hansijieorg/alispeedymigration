@@ -38,14 +38,21 @@ Blueprint详细可配置的参数如下:
 点击 Launch 按钮，在弹出的框中选择“Test Mode”，即可执行对虚拟机的转换并创建EC2实例。
 ![](/images/SyncWithCloudEndure/testmode1.png)
 
-在点击了继续按钮后，CloudEndure 将花费数分钟，从当前数据持续复制的状态中生成一个时间点，完成一份快照，然后将这个时间点的快照作为测试环境的系统盘，启动一个新的 EC2，交付测试。此时点击左侧的 Job Progress 按钮，即可看到系统后台的任务进行快照和虚拟机转换的进度。
+在弹出的测试环境的对话框中提示，一个迁移实例只能有一个测试环境，如果 此前曾经发起过测试，那么现在进入测试将自动删除掉以前的测试虚拟机。点击 Continue 继续。
 ![](/images/SyncWithCloudEndure/testmode2.png)
 
-4.现在进入 AWS 控制台，选择本次迁移的目标区域宁夏区域，查看 EC2 清单， 可以看到有两台 EC2。名为 Replication Server 到实例会一直存在本 AWS 区域内，直到 CloudEndure 上的项目（Project）被删除。另一个实例叫做 Machine Converter，这个实例将用于从全量复制和增量复制的时间点生成磁盘快照。在环境启动完成后会自动把自己删除。
+在点击了Continue按钮后，CloudEndure 将花费数分钟，从当前数据持续复制的状态中生成一个时间点，完成一份快照，然后将这个时间点的快照作为测试环境的系统盘，启动一个新的 EC2，交付测试。此时点击左侧的 Job Progress 按钮，即可看到系统后台的任务进行快照和虚拟机转换的进度。
 ![](/images/SyncWithCloudEndure/testmode3.png)
 
-5.回到 CloudEndure 控制台，查看 Job Progress，确保通过快照生成测试环境的任务已经完成，如下截图。
+4.现在进入 AWS 控制台，选择本次迁移的目标区域宁夏区域，查看 EC2 清单， 可以看到有两台 EC2。名为 Replication Server 到实例会一直存在本 AWS 区域内，直到 CloudEndure 上的项目（Project）被删除。另一个实例叫做 Machine Converter，这个实例将用于从全量复制和增量复制的时间点生成磁盘快照。在环境启动完成后会自动把自己删除。
+![](/images/SyncWithCloudEndure/testmode4.png)
 
-6.回到 AWS EC2 控制台，可以在 EC2 清单中看到，测试用的 EC2 实例也生成完毕，其规格、子网、EIP 配置都是咨询迁移过程的 蓝图设置的,并且可以用阿里云上的用户名和key进行登录后测试。如下截图
+5.等待数分钟，回到 CloudEndure 控制台，查看 Job Progress，确保通过快照生成测试环境的任务已经完成，如下截图。
+![](/images/SyncWithCloudEndure/testmode5.png)
 
-7.当测试完毕，就可以等待割接时系统切换。
+
+6.回到 AWS EC2 控制台，可以在 EC2 清单中看到，测试用的 EC2 实例也生成完毕，其规格、子网、EIP 配置都是咨询迁移过程的蓝图设置的,并且可以用阿里云上的用户名和key进行登录后测试，如下截图。
+![](/images/SyncWithCloudEndure/testmode6.png)
+
+
+7.当测试完毕，就可以等待“系统切换”时正式将应用服务器发布到宁夏Region。
