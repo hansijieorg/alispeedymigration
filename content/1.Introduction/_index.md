@@ -39,3 +39,5 @@ weight: 10
 
 8.把部署在Blink上的数据处理系统迁移到Flink on EMR上（可选）
 
+9.把部署在MaxCompute里的数据迁移到EMR上（可选）
+

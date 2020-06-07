@@ -25,3 +25,5 @@ weight: 1
 * 学习如何把ACK上的容器化应用迁移到Amazon EKS上
 
 * 学习如何把阿里云上的Blink实时数据处理系统迁移到Flink on EMR上
+
+* 学习如何把阿里云MaxCompute里的数据迁移到Amazon EMR上

@@ -1,10 +1,10 @@
 ﻿---
-title: "把MaxCompute的数据迁移到EMR (可选)"
+title: "迁移MaxCompute的数据到EMR里 (可选)"
 chapter: false
 weight: 110
 ---
 
-## 把MaxCompute的数据迁移到EMR
+## 迁移MaxCompute的数据到EMR里
 
 本实验描述了如何把保存在MaxCompute的表里的数据迁移到Amazon EMR的Hive表里，其中包括以下步骤：
 
