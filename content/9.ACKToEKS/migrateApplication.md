@@ -34,6 +34,7 @@ velero backup get
 ```bash
 aws s3 ls s3://velero-s3-bucket-<姓名拼音>/backups/game-backup-<姓名拼音>/
 ```
+![](/images/ACKToEKS/ack-game-backup.png)
 
 3.执行下面的命令，把kubectl的连接切换到EKS集群。
 ```bash
