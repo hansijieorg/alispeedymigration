@@ -1,4 +1,4 @@
-﻿---
+---
 title: "迁移Blink应用到Flink on EMR (可选)"
 chapter: false
 weight: 100
@@ -6,5 +6,14 @@ weight: 100
 
 ## 迁移Blink应用到Flink on EMR
 
+### 场景介绍
+
+数据由客户端通过网络将数据流输入至服务端的Kafka集群，由Blink/Flink从Kafka主题中进行实时的数据处理，并将结果数据存储或发送至其他目的地。
 
 
+
+### 实验步骤：
+
+- 准备开发环境
+- 在阿里云Blink上的实现
+- 迁移至Flink
