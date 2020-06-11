@@ -1,7 +1,7 @@
 ﻿---
 title: "配置CloudEndure并启动数据传输"
 chapter: false
-weight: 42
+weight: 43
 ---
 
 ## 在CloudEndure上配置蓝图(Blueprint)
@@ -14,10 +14,10 @@ CloudEndure agent部署完毕以后，会发起初次全同步，可以在Consol
 Blueprint详细可配置的参数如下:
 * Machine Type：启动后的主机类型，选择c5.large
 * Launch Type：On-Demand
-* Subnet：子网选择subnet-ext
-* Security Group：安全组（需要提前建好，选择已存在的）
+* Subnet：子网选择公网子网(用于测试)
+* Security Group：安全组（需要提前建好，选择已存在的，允许22和80）
 * Private IP：重新生成内网 IP，选 Create New
-* Elastic IP：弹性 IP，根据本机和子网类型酌情选择，这里选择 Create New
+* Elastic IP：弹性 IP，根据本机和子网类型酌情选择，这里选择 Create New，请确保您在宁夏 Region的弹性 IP Limit允许创建。
 * Placement Group：放置组，不是 HPC 等特殊应用无需调整，选择 None 即可
 * IAM Role：为 EC2 挂载 IAM 角色，没有使用这个功能选 None 即可
 * Use Existing Instance ID：留空
@@ -51,8 +51,15 @@ Blueprint详细可配置的参数如下:
 ![](/images/SyncWithCloudEndure/testmode5.png)
 
 
-6.回到 AWS EC2 控制台，可以在 EC2 清单中看到，测试用的 EC2 实例也生成完毕，其规格、子网、EIP 配置都是咨询迁移过程的蓝图设置的,并且可以用阿里云上的用户名和key进行登录后测试，如下截图。
+6.回到 AWS EC2 控制台，可以在 EC2 清单中看到，测试用的 EC2 实例也生成完毕，其规格、子网、EIP 配置都是咨询迁移过程的蓝图设置的,如下截图。
 ![](/images/SyncWithCloudEndure/testmode6.png)
 
+7.等待约5分钟后，通过阿里云上的用户名和key进行登录后测试,确保IP和大小和蓝图设置都一样。
 
-7.当测试完毕，就可以等待“系统切换”时正式将应用服务器发布到宁夏Region。
+![](/images/SyncWithCloudEndure/testmode7.png)
+
+8.当测试完毕，就可以通过CloudEndure删除测试用的EC2，等待“系统切换”时正式将应用服务器发布到宁夏Region。
+
+点击"Actions"里的"Delete Target Machine"。
+
+![](/images/SyncWithCloudEndure/testmode8.png)
