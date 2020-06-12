@@ -3,26 +3,14 @@ title: "割接并发布应用服务器"
 chapter: false
 weight: 82
 ---
-## 删除阿里云应用服务器上的Cloud-init
-1.由于阿里云版的Cloud-init与AWS不兼容，会导致EC2开机时无法正常启用，频繁尝试访问http://100.100.100.200/latest/meta-data/，所以需要在正式割接时删除。
+## 修改阿里云应用服务器上的Cloud-init
+1.由于阿里云版的Cloud-init中会访问阿里云的Metadata服务，即频繁尝试访问http://100.100.100.200/latest/meta-data/，这与AWS的metadata服务(http://169.254.169.254)不同，会导致EC2开机启动时间过长，且无法初始化EC2信息，所以需要在正式割接时修改为AWS的。
 
-    sudo systemctl stop cloud-config.service
-    sudo systemctl disable cloud-config.service
-    sudo systemctl stop cloud-final.service
-    sudo systemctl disable cloud-final.service
-    sudo systemctl stop cloud-init-local.service
-    sudo systemctl disable cloud-init-local.service
-    sudo systemctl stop cloud-init-upgrade.service
-    sudo systemctl disable cloud-init-upgrade.service
-    sudo systemctl stop cloud-init.service
-    sudo systemctl disable cloud-init.service
-    #删除
-    sudo rm /lib/systemd/system/cloud-final.service
-    sudo rm /lib/systemd/system/cloud-config.service
-    sudo rm /lib/systemd/system/cloud-config.target
-    sudo rm /lib/systemd/system/cloud-init.service
-    sudo rm /lib/systemd/system/cloud-init-upgrade.service
-    sudo rm /lib/systemd/system/cloud-init-local.service
+修改/etc/cloud/cloud.cfg配置，将datasource_list: [ AliYun ]修改为datasource_list: [ Ec2, None ]
+
+    sed -e "s/\[\ AliYun\ \]/\[\ Ec2\,\ None\ \]/g" /etc/cloud/cloud.cfg
+
+![](/images/Failover/updatecloudinit.png)
 
 ## 通过CloudEndure割接并发布应用服务器
 2.进行系统割接时，按照在测试阶段制订好的切换计划和流程进行。
