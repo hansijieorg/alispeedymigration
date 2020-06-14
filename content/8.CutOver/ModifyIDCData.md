@@ -8,7 +8,7 @@ weight: 81
 
 本次实验，会在本地数据中心部署的Wordpress应用系统上进行操作，创建一篇新的博客。步骤如下：
 
-1.打开本地数据中心的Wordpress应用系统：进入堡垒机，在浏览器中输入http://wordpress应用服务器的私有IP地址/wordpress/
+1.在浏览器中输入http://阿里云wordpress应用服务器的公有IP地址/wordpress/
 
 2.在Wordpress的主页上，找到并点击"登录"链接
 ![](/images/Failover/wphomepage.png)

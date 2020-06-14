@@ -5,7 +5,9 @@ weight: 70
 ---
 
 在本次实验中，我们会使用迁移工具将AliCloud OSS上的文件迁移到指定的S3存储桶中。
-我们在此次试验中所使用的工具是amazon-s3-resumable-upload tool（https://github.com/aws-samples/amazon-s3-resumable-upload）,它本身是一个开源工具,由AWS团队开发,主要功能包括:
+我们在此次试验中所使用的工具是amazon-s3-resumable-upload tool ( https://github.com/aws-samples/amazon-s3-resumable-upload )。
+
+它本身是一个开源工具,由AWS团队开发,主要功能包括:
 
 * 源文件的自动分片获取，多线程并发上传到目的S3再合并文件，断点续传(分片级别)。
 * 支持的源：本地文件、Amazon S3、阿里云 OSS

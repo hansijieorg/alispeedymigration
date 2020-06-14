@@ -10,7 +10,7 @@ Parameters:
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
   SubnetCidr1:
-    Description: The Subnet CIDR
+    Description: The Public Subnet CIDR in cn-northwest-1a
     Type: String
     MinLength: '9'
     MaxLength: '18'
@@ -18,11 +18,27 @@ Parameters:
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
   SubnetCidr2:
-    Description: The Subnet CIDR
+    Description: The Public Subnet CIDR in cn-northwest-1b
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.32.0/24
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  SubnetCidr3:
+    Description: The Private Subnet CIDR in cn-northwest-1a
     Type: String
     MinLength: '9'
     MaxLength: '18'
     Default: 10.0.64.0/24
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  SubnetCidr4:
+    Description: The Private Subnet CIDR in cn-northwest-1b
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.96.0/24
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
   DBName:
@@ -60,6 +76,150 @@ Parameters:
     Type: String
     Default: 10.0.0.5
 Resources:
+  BCDRVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: false
+      InstanceTenancy: default
+      Tags:
+      - Key: Name
+        Value: ALIMIGRATIONVPC
+  WordpressSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: 'AWS::Region'
+      CidrBlock: !Ref SubnetCidr1
+      MapPublicIpOnLaunch : true
+      Tags:
+        - Key: Name
+          Value: ALIMIGRATIONDMZSubnet1
+      VpcId: !Ref BCDRVPC
+  WordpressSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: 'AWS::Region'
+      CidrBlock: !Ref SubnetCidr2
+      MapPublicIpOnLaunch : true
+      Tags:
+        - Key: Name
+          Value: ALIMIGRATIONDMZSubnet2
+      VpcId: !Ref BCDRVPC
+  WordpressSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: 'AWS::Region'
+      CidrBlock: !Ref SubnetCidr3
+      Tags:
+        - Key: Name
+          Value: ALIMIGRATIONPrivateSubnet1
+      VpcId: !Ref BCDRVPC
+  WordpressSubnet4:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: 'AWS::Region'
+      CidrBlock: !Ref SubnetCidr4
+      Tags:
+        - Key: Name
+          Value: ALIMIGRATIONPrivateSubnet2
+      VpcId: !Ref BCDRVPC
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: WordpressInternetGateway
+  VPCGatewayAttach:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref BCDRVPC
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref BCDRVPC
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable
+  WordPressSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref WordpressSubnet1
+  WordPressSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref WordpressSubnet2
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref BCDRVPC
+  WordPressSubnet3RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      SubnetId: !Ref WordpressSubnet3
+  WordPressSubnet4RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      SubnetId: !Ref WordpressSubnet4
+  # NatGateway
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+        - EIP
+        - AllocationId
+      SubnetId: !Ref WordpressSubnet1
+      Tags:
+      - Key: Name
+        Value: NatGateway
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  NatRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  VPNInstanceRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 192.168.0.0/16
+      InstanceId: !Ref BastionVPNEC2Instance
+
+  VPNInstanceRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 192.168.0.0/16
+      InstanceId: !Ref BastionVPNEC2Instance
+
   BastionVPNSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     DependsOn: BCDRVPC
@@ -70,6 +230,14 @@ Resources:
         - Key: Name
           Value: SGBastionVPN
       SecurityGroupIngress:
+        - IpProtocol: '-1'
+          FromPort: '-1'
+          ToPort: '-1'
+          CidrIp: 192.168.0.0/16
+        - IpProtocol: '-1'
+          FromPort: '-1'
+          ToPort: '-1'
+          CidrIp: !Ref VpcCidr
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
@@ -101,7 +269,7 @@ Resources:
     Type: 'AWS::EC2::Instance'
     Properties:
       InstanceType: t3.micro
-      ImageId: ami-08728ad7a0e30df2f
+      ImageId: ami-07172dea9a75e2143
       KeyName: !Ref KeyPairName
       NetworkInterfaces:
         - NetworkInterfaceId: !Ref InstanceNetworkInterface
@@ -122,121 +290,11 @@ Resources:
           # Updates & Install needed programs
           yum update -y 
 
-
-  BCDRVPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: !Ref VpcCidr
-      EnableDnsSupport: true
-      EnableDnsHostnames: false
-      InstanceTenancy: default
-      Tags:
-      - Key: Name
-        Value: ALIMIGRATIONVPC
-  WordpressSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Select
-        - 0
-        - !GetAZs
-          Ref: 'AWS::Region'
-      CidrBlock: !Ref SubnetCidr1
-      MapPublicIpOnLaunch : true
-      Tags:
-        - Key: Name
-          Value: ALIMIGRATIONDMZSubnet
-      VpcId: !Ref BCDRVPC
-  WordpressSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Select
-        - 1
-        - !GetAZs
-          Ref: 'AWS::Region'
-      CidrBlock: !Ref SubnetCidr2
-      Tags:
-        - Key: Name
-          Value: ALIMIGRATIONPrivateSubnet
-      VpcId: !Ref BCDRVPC
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-    Properties:
-      Tags:
-        - Key: Name
-          Value: WordpressInternetGateway
-  VPCGatewayAttach:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      InternetGatewayId: !Ref InternetGateway
-      VpcId: !Ref BCDRVPC
-  PublicRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref BCDRVPC
-
-  PublicRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
-      RouteTableId: !Ref PublicRouteTable
-  WordPressSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      SubnetId: !Ref WordpressSubnet1
-
-
-
-
-  PrivateRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref BCDRVPC
-  WordPressSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      SubnetId: !Ref WordpressSubnet2
-  # NatGateway
-  NatGateway:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId:
-        Fn::GetAtt:
-        - EIP
-        - AllocationId
-      SubnetId: !Ref WordpressSubnet1
-      Tags:
-      - Key: Name
-        Value: NatGateway
-  EIP:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
-
-  NatRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway
-
-  VPNInstanceRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      DestinationCidrBlock: 192.168.0.0/16
-      InstanceId: !Ref BastionVPNEC2Instance
-
-
-
-
   WebServerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Enable HTTP access via port 80 locked down to the load balancer
-        + SSH access
+      GroupName: SG-WebServer
+      GroupDescription: Security Group for WebServer
       VpcId: !Ref BCDRVPC
       SecurityGroupIngress:
       - IpProtocol: '-1'
@@ -246,10 +304,11 @@ Resources:
       - IpProtocol: '-1'
         FromPort: '-1'
         ToPort: '-1'
-        CidrIp: 10.0.0.0/16
+        CidrIp: !Ref VpcCidr
   BasionSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
+      GroupName: SG-Basion
       GroupDescription: Enable Basion Login from Internet
       VpcId: !Ref BCDRVPC
       SecurityGroupIngress:
@@ -263,7 +322,7 @@ Resources:
       GroupName: SG-Database
       GroupDescription: Security Group for login DataBase
       SecurityGroupIngress:
-        - CidrIp: 10.0.0.0/16
+        - CidrIp: !Ref VpcCidr
           Description: MYSQL Login
           FromPort: 3306
           IpProtocol: TCP
@@ -301,6 +360,8 @@ Resources:
       SubnetIds:
         - !Ref WordpressSubnet1
         - !Ref WordpressSubnet2
+        - !Ref WordpressSubnet3
+        - !Ref WordpressSubnet4
       Tags:
         - Key: Name
           Value: RepInstanceSubnetGroup
@@ -328,6 +389,8 @@ Resources:
       SubnetIds:
         - !Ref WordpressSubnet1
         - !Ref WordpressSubnet2
+        - !Ref WordpressSubnet3
+        - !Ref WordpressSubnet4
   DataBase:
     DependsOn:
       - DBParameterGroup

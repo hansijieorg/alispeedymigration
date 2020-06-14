@@ -44,6 +44,82 @@
         }
     },
     "Resources": {
+        "EMRStack": {
+          "Type": "AWS::EMR::Cluster",
+          "Properties": {
+            "Instances": {
+              "MasterInstanceGroup": {
+                "InstanceCount": 1,
+                "InstanceType": "m5.xlarge",
+                "Market": "ON_DEMAND",
+                "Name": "cfnMaster"
+              },
+              "CoreInstanceGroup": {
+                "InstanceCount": 2,
+                "InstanceType": "m5.xlarge",
+                "Market": "ON_DEMAND",
+                "Name": "cfnCore"
+              },
+              "TerminationProtected" : "false",
+              "Ec2SubnetId" : {"Ref" : "EMRSubnetId"}
+            },
+            "Name": "AliMigrationCluster",
+            "JobFlowRole" : {"Ref": "emrEc2InstanceProfile"},
+            "ServiceRole" : {"Ref": "emrRole"},
+            "ReleaseLabel" : "emr-5.30.0",
+            "VisibleToAllUsers" : true
+          }
+        },
+        "emrRole": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Version": "2008-10-17",
+              "Statement": [
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": "elasticmapreduce.amazonaws.com.cn"
+                  },
+                  "Action": "sts:AssumeRole"
+                }
+              ]
+            },
+            "Path": "/",
+            "ManagedPolicyArns": ["arn:aws-cn:iam::aws:policy/service-role/AmazonElasticMapReduceRole"]
+          }
+        },
+        "emrEc2Role": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Version": "2008-10-17",
+              "Statement": [
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": "ec2.amazonaws.com.cn"
+                  },
+                  "Action": "sts:AssumeRole"
+                }
+              ]
+            },
+            "Path": "/",
+            "ManagedPolicyArns": ["arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role"]
+          }
+        },
+        "emrEc2InstanceProfile": {
+          "Type": "AWS::IAM::InstanceProfile",
+          "Properties": {
+            "Path": "/",
+            "Roles": [ {
+              "Ref": "emrEc2Role"
+            } ]
+          }
+        },
+        
         "MSKStack": {
             "Type": "AWS::MSK::Cluster",
             "Properties": {
@@ -55,6 +131,9 @@
                         {
                             "Ref": "MSKSubnet2"
                         }
+                    ],
+                    "SecurityGroups": [
+                        "Ref": "MSKSGName"
                     ],
                     "InstanceType": "kafka.t3.small",
                     "StorageInfo": {
@@ -129,6 +208,7 @@
             }
         }
     },
+    
     "Parameters": {
         "MSKSubnet1": {
             "Type": "AWS::EC2::Subnet::Id"
@@ -144,6 +224,12 @@
         },
         "EC2KeyPair": {
             "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "MSKSGName": {
+            "Type": "AWS::EC2::SecurityGroup::Id"
+        },
+        "EMRSubnetId": {
+            "Type": "AWS::EC2::Subnet::Id"
         }
     },
     "Outputs": {

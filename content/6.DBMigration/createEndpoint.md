@@ -23,8 +23,7 @@ weight: 51
 
 * "源引擎"选择：mysql
 
-* "服务器名称"输入您之前在"对本地数据中心的应用系统进行初始化"部分里记录的EC2的私有ip地址。
-或者到北京region的EC2控制台上找到该EC2的私有IP地址：https://console.amazonaws.cn/ec2/v2/home?region=cn-north-1#Instances:tag:Name=APP;sort=launchTime
+* "服务器名称"输入之前所获得的阿里云RDS的连接字符串。
 
 * "端口"输入：3306
 
@@ -34,7 +33,6 @@ weight: 51
 
 其他保留缺省值，然后选择【创建终端节点】按钮。
 ![](/images/DataSyncWithDMS/createSourceEndpoint1.png)
-![](/images/DataSyncWithDMS/createSourceEndpoint2.png)
 
 3.创建目标终端节点：在左边菜单上选择【终端节点】菜单，然后在右边的界面上选择【创建终端节点】按钮。
 在创建终端节点的界面上：

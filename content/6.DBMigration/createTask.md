@@ -12,7 +12,7 @@ weight: 52
 ![](/images/DataSyncWithDMS/createTask1.png)
 在创建任务的界面上：
 
-* "任务标识符"输入：dr-task
+* "任务标识符"输入：ali-migration-task
 
 * "复制实例"下拉列表里选择：bcdrdms-vpc开头的实例
 

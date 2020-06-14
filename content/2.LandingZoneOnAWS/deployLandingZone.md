@@ -11,20 +11,30 @@ weight: 22
 ### 阿里云的VPC 
 VPC CIDR: 192.168.0.0/16
 
-### VPC和子网的信息如下：
+### VPC和子网的信息如下
 
-VPC CIDR: 10.0.0.0/16
+{{% notice note %}}
+这里因为不同的用户，使用的是同一套阿里云上的源环境，因此迁移的目标环境的网段需要区分开。
+所以不同的用户，会被分配一个不同的编号，比如0，1，2，3等。下面的"x"就是分配给你的编号。
+{{% /notice  %}}
+
+
+VPC CIDR: 10.x.0.0/16
 
 subnet CIDR: 
 
-10.0.0.0/24   -->   公有子网
+10.x.0.0/24    -->   公有子网1
 
-10.0.64.0/24  -->   私有子网
+10.x.32.0/24   -->   公有子网2
+
+10.x.64.0/24   -->   私有子网1
+
+10.x.96.0/24   -->   私有子网2
 
 ### 安全组：
 
 安全组一：
-1. Ingress all 10.0.0.0/16
+1. Ingress all 10.x.0.0/16
 2. Ingress all 192.168.0.0/16 - 阿里云的内网网段
 
 安全组二：
@@ -49,7 +59,7 @@ subnet CIDR:
 
 ### 堡垒机兼工作服务器
 
-1. 内网IP：10.0.0.5
+1. 内网IP：10.x.0.5
 2. cloudformation创建时指定keypair
 3. 需要设置它的安全组，绑定阿里云的openvpn ecs的公网IP
 4. 查询EC2的public IP：aws ec2 describe-instances --filters Name=tag:Name,Values=BastionVPNInstance --query 'Reservations[].Instances[].PublicIpAddress'
@@ -78,15 +88,15 @@ subnet CIDR:
 
 * DBUser输入：root
 
-* SubnetCidr1保留缺省值：10.0.0.0/24
+* SubnetCidr1：把缺省值中的第二个0换成对应你的编号（10.x.0.0/24）
 
-* SubnetCidr1保留缺省值：10.0.64.0/24
+* SubnetCidr1：把缺省值中的第二个0换成对应你的编号（10.x.64.0/24）
 
-* VpcCidr保留缺省值：10.0.0.0/16
+* VpcCidr：把缺省值中的第二个0换成对应你的编号（10.x.0.0/16）
 
 * Keypair：选择预先创建的Keypair：target-ningxia-key
 
-* EC2InstancePrivateIP: EC2 Bastion VPN instance private IP
+* EC2InstancePrivateIP: EC2堡垒机实例的私有IP地址，把缺省值中的第二个0换成对应你的编号（10.x.0.5）
 
 ![](/images/LandingZoneOfDRSite/createStackStep2.png)
 
@@ -95,3 +105,7 @@ subnet CIDR:
 
 7.在"审核"页面中，保留缺省值，点击【创建堆栈】。等待堆栈创建完毕。整个过程大约需要11分钟。
 
+{{% notice note %}}
+如果要进行应用系统从Blink迁移到Flink的实验，因为该环境准备的时间需要至少15分钟，为了节省时间，建议先进行[Blink的开发环境准备]({{< ref "10.BlinkToFlink/1.preparation.md" >}})，
+然后在CloudFormation脚本部署Blink开发环境的过程中，可以同步进行后续的实验。
+{{% /notice  %}}

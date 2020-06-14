@@ -1,12 +1,13 @@
 ﻿---
 title: "在AWS VPN服务器上的配置"
 chapter: false
-weight: 33
+weight: 43
 ---
 
 ## 在AWS VPN服务器上的配置
 
 本次实验中，会在AWS的VPN虚机上进行如下的配置：
+
 1.安装OpenSwan软件：
 ```bash
 sudo su - 
@@ -21,12 +22,16 @@ vi /etc/ipsec.conf
 3.编辑/etc/ipsec.d/nettonet.conf文件，添加如下的内容
 ```bash
 vi /etc/ipsec.d/nettonet.conf
+```
+
+添加如下的内容到nettonet.conf文件里：
+```bash
 conn nettonet
             authby=secret
             auto=start
             leftid=y                    <--AWS VPN虚拟机的公网ip
             left=%defaultroute
-            leftsubnet=10.0.0.0/16      <--AWS VPC CIDR
+            leftsubnet=10.x.0.0/16      <--AWS VPC CIDR，这里的x改成你的编号
             leftnexthop=%defaultroute
             rightid=ALI
             right=x                     <--阿里云VPN虚拟机的公网ip
@@ -39,15 +44,23 @@ conn nettonet
             pfs=no
 ```
 
-4.编辑/etc/ipsec.d/nettonet.secrets文件，添加如下的内容，这里的aws123表示密钥密码，可以是任何值。
+4.编辑/etc/ipsec.d/nettonet.secrets文件
 ```bash
 vi /etc/ipsec.d/nettonet.secrets
+```
+
+添加如下的内容，这里的aws123表示密钥密码，与阿里云上配置的密码相同。把x替换为阿里云VPN虚拟机的公网ip，y替换成AWS VPN虚拟机的公网ip。
+```bash
 y x: PSK "aws123"
 ```
 
-5.编辑/etc/sysctl.conf文件，并添加如下内容。
+5.编辑/etc/sysctl.conf文件
 ```bash
 vi /etc/sysctl.conf
+```
+
+添加如下内容到/etc/sysctl.conf文件里：
+```bash
 net.ipv4.ip_forward = 1
 net.ipv4.conf.all.accept_redirects = 0
 net.ipv4.conf.all.send_redirects = 0
@@ -57,7 +70,7 @@ net.ipv4.conf.default.accept_redirects = 0
 net.ipv4.conf.eth0.accept_redirects = 0
 ```
 
-6.运行下面的命令从而启用新的配置
+6.运行下面的命令，从而启用新的配置
 ```bash
 sysctl -p
 ```
@@ -67,3 +80,5 @@ sysctl -p
 systemctl start ipsec
 ipsec verify
 ```
+
+从AWS的堡垒机上去ping阿里云的Wordpress应用服务器的私有IP，确认是否能够成功ping通。

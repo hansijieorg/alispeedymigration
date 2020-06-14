@@ -1,7 +1,7 @@
 ﻿---
 title: "部署阿里云和AWS之间的VPN"
 chapter: false
-weight: 30
+weight: 40
 ---
 
 ## 部署阿里云和AWS之间的VPN
