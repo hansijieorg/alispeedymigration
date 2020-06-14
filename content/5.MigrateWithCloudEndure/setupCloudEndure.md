@@ -46,7 +46,7 @@ Blueprint详细可配置的参数如下:
 
 2.等待一段时间后，当被复制的虚拟机的复制数据的进度达到100%，状态变为Continuous Data Replication，则完成存量数据的复制，进入变更复制阶段。此时可以启动EC2进行测试。在此阶段，需要确认迁移过后的EC2所必需的调整和配置，如：部分软件的升级、yum source、应用的重新配置等内容，并对最终的切换流程进行确认。如下图所示：
 
-## 启动测试模式
+#### 启动测试模式
 3.进入 CloudEndure 的 Machine 界面，点击首次全量数据复制完成的云服务器，可以看到左侧显示它的状态是“Never Tested”，且 Lag 是 None。这表示本虚拟机没有经过测试，另外持续数据复制是正常的，网络良好，没有延迟。
 点击 Launch 按钮，在弹出的框中选择“Test Mode”，即可执行对虚拟机的转换并创建EC2实例。
 ![](/images/SyncWithCloudEndure/testmode1.png)

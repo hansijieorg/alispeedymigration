@@ -34,19 +34,29 @@ subnet CIDR:
 ### 安全组：
 
 安全组一：
-1. Ingress all 10.x.0.0/16
-2. Ingress all 192.168.0.0/16 - 阿里云的内网网段
+
+1.Ingress all 10.x.0.0/16
+
+2.Ingress all 192.168.0.0/16 - 阿里云的内网网段
+
 
 安全组二：
-1. Ingress 3389 0.0.0.0/0
+
+1.Ingress 3389 0.0.0.0/0
+
 
 安全组三：数据库
-1. Ingress 3389 192.168.0.0/16
+
+1.Ingress 3389 192.168.0.0/16
+
 
 安全组四：SGBastionVPN
-1. Ingress 22 0.0.0.0/0
-2. Ingress udp 500 0.0.0.0/0
-2. Ingress udp 4500 0.0.0.0/0
+
+1.Ingress 22 0.0.0.0/0
+
+2.Ingress udp 500 0.0.0.0/0
+
+3.Ingress udp 4500 0.0.0.0/0
 
 
 ### DMS Replication Instance
@@ -54,7 +64,9 @@ subnet CIDR:
 ### Database
 
 1. RDS Mysql
+
 2. utf8 编码
+
 3. 安全组三
 
 ### 堡垒机兼工作服务器
@@ -62,8 +74,10 @@ subnet CIDR:
 1. 内网IP：10.x.0.5
 2. cloudformation创建时指定keypair
 3. 需要设置它的安全组，绑定阿里云的openvpn ecs的公网IP
-4. 查询EC2的public IP：aws ec2 describe-instances --filters Name=tag:Name,Values=BastionVPNInstance --query 'Reservations[].Instances[].PublicIpAddress'
-
+4. 查询EC2的public IP：
+```bash
+aws ec2 describe-instances --filters Name=tag:Name,Values=BastionVPNInstance --query 'Reservations[].Instances[].PublicIpAddress'
+```
 
 ## 调用该脚本的过程如下：
 

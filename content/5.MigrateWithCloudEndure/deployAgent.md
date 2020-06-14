@@ -8,14 +8,29 @@ weight: 51
 
 部署agent的过程如下：
 
-1.访问Cloudendure Console: https://console.awscloudendure.cn/#/signIn
+1.在阿里云的Wordpress应用服务器上卸载安骑士。
+
+先判断当前阿里云ECS服务器上是否运行了安骑士：
+```bash
+ps aux | grep Ali | grep -v grep
+```
+
+如果上面的命令有返回结果，则说明运行了安骑士。按照下面的方式进行删除：
+```bash
+curl -sSL http://update.aegis.aliyun.com/download/quartz_uninstall.sh | sudo bash
+rm -rf /usr/local/aegis
+rm /usr/sbin/aliyun-service
+ps aux | grep Ali | grep -v grep | awk '{print $2}' | xargs kill -9
+```
+
+2.访问Cloudendure Console: https://console.awscloudendure.cn/#/signIn
 
 输入工作人员提供的用户名和密码，然后点击【SIGN IN】
 
-2.点击左上角的"+"，创建项目，填写项目名称为wp-dir(如果多人共用一个CloudEndure账号，则项目名称后面可以跟上自己的名称，比如wp-dir-xyz)、类型选择Migration，并创建项目。
+3.点击左上角的"+"，创建项目，填写项目名称为wp-dir(如果多人共用一个CloudEndure账号，则项目名称后面可以跟上自己的名称，比如wp-dir-xyz)、类型选择Migration，并创建项目。
 ![](/images/SyncWithCloudEndure/createProject.png)
 
-3.点击创建项目按钮以后，在弹出的窗口上点击【START】按钮，并在下一个弹出的"Project Not Set Up!"界面上，点击【CONTINUE】按钮。
+4.点击创建项目按钮以后，在弹出的窗口上点击【START】按钮，并在下一个弹出的"Project Not Set Up!"界面上，点击【CONTINUE】按钮。
 
 在向导的第一步，要求设置 API Access Key。在 Setup & Info 界面下的Credentials 标签页下，输入之前创建的demouser用户的access key和secret key，如下截图。
 
@@ -26,7 +41,7 @@ weight: 51
 
 点击【Save】按钮。
 
-4.接下来在REPLICATION SETTINGS中：
+5.接下来在REPLICATION SETTINGS中：
 
 * 设置Migration Source为Other Infrastructure，即非AWS的基础设施。Migration Target为AWS China(Ningxia)。
 
@@ -49,10 +64,10 @@ weight: 51
 下图显示了一个样例:
 ![](/images/SyncWithCloudEndure/createProject2.png)
 
-5.安装Agent，点击左侧Machine菜单选项，来获取Agent安装信息。并把如下图样例所示的红框里的命令拷贝下来。
+6.安装Agent，点击左侧Machine菜单选项，来获取Agent安装信息。并把如下图样例所示的红框里的命令拷贝下来。
 ![](/images/SyncWithCloudEndure/installAgent1.png)
 
-6.SSH登录到阿里云的应用服务器（根据前面步骤中获得的安装了Wordpress应用的ECS的公网IP地址），把第5步CloudEndure界面上部署agent的两个命令拷贝并粘贴到shell里执行，从而安装Agent。
+7.SSH登录到阿里云的应用服务器（根据前面步骤中获得的安装了Wordpress应用的ECS的公网IP地址），把第5步CloudEndure界面上部署agent的两个命令拷贝并粘贴到shell里执行，从而安装Agent。
 
 如果看到下面的输出，则说明安装成功。
 ![](/images/SyncWithCloudEndure/installAgent2.png)

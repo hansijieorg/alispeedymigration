@@ -38,7 +38,7 @@ kubectl get svc
 如果输出能看到如下的输出，则说明成功连接上了ACK集群。
 ![](/images/ACKToEKS/getSvcFromACK.png)
 
-5.把下面列出的、用于部署环境相关的脚本上传到Linux工作服务器上。
+5.把下面列出的、用于部署环境相关的脚本上传到AWS的堡垒机上。
 {{%attachments title="下载链接:" /%}}
 
 把3个模板文件和1个shell脚本文件下载同一个目录下以后，执行如下的命令，其中的"编号"会由工作人员提供。

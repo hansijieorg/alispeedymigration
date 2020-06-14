@@ -10,7 +10,7 @@ weight: 80
 
 * 在本地数据中心的应用中，进行一定的数据变更，比如创建一篇新的博客
 
-* 通过CloudEndure割接并发布应用服务器的生产环境到宁夏Region
+* 通过CloudEndure切换应用服务器
 
 * 中断AWS DMS的复制任务
 
