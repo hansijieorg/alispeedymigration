@@ -33,7 +33,7 @@ weight: 101
 
 * MSKSGName：选择名称为"SG-WebServer"的安全组
 
-* EMRSubnet：选择名称为"ALIMIGRATIONPrivateSubnet1"的子网
+* EMRSubnet：选择名称为"ALIMIGRATIONDMZSubnet1"的子网
 
 ![](/images/BlinkToFlink/prepareFlinkEnv1.png)
 
