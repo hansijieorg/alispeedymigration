@@ -64,7 +64,7 @@
               "Ec2SubnetId" : {"Ref" : "EMRSubnetId"}
             },
             "Name": "AliMigrationCluster",
-            "Applications" : ["Hadoop","Hive","HBase","Spark","Hue","Flink"],
+            "Applications" : [{"Name": "Hadoop"},{"Name": "Hive"},{"Name": "HBase"},{"Name": "Spark"},{"Name": "Flink"},{"Name": "Hue"}],
             "JobFlowRole" : {"Ref": "emrEc2InstanceProfile"},
             "ServiceRole" : {"Ref": "emrRole"},
             "ReleaseLabel" : "emr-5.30.0",
