@@ -8,7 +8,7 @@ weight: 32
 
 在阿里云上部署了应用服务器和负载均衡器以后，按照下面的步骤部署RDS，并进行应用系统的配置：
 
-1.执行下面的命令，创建RDS，注意该命令会执行一段时间才会返回，请耐心等候：
+1.执行下面的命令，创建RDS，下面的"x"改为你对应的编号，注意该命令会执行一段时间才会返回，请耐心等候：
 ```bash
 RDSINFO=`aliyun rds CreateDBInstance \
 --RegionId cn-zhangjiakou \
@@ -16,14 +16,14 @@ RDSINFO=`aliyun rds CreateDBInstance \
 --EngineVersion 5.7 \
 --DBInstanceClass mysql.n1.micro.1 \
 --DBInstanceStorage 20 \
---DBInstanceNetType Intranet \
---SecurityIPList 192.168.0.0/16,10.x.0.0/16 \   ##这里的x改为你对应的编号
+--DBInstanceNetType Internet \
+--SecurityIPList 0.0.0.0/0 \
 --PayType Postpaid \
 --ZoneId cn-zhangjiakou-a \
 --InstanceNetworkType VPC \
 --ConnectionMode Standard \
---VPCId vpc-8vbmv41oajoe6q4ul0tr8 \
---VSwitchId vsw-8vbhstxs1xkqitlt4mr7b`
+--VPCId vpc-8vbimr8d4ffkh3l9xljz7 \
+--VSwitchId vsw-8vbcfm497fuqep5o519o9`
 ```
 
 运行下面的命令获得RDS实例的状态：
@@ -68,4 +68,5 @@ UPDATE wp_posts SET post_content = REPLACE(post_content, 'localhost', '阿里云
 UPDATE wp_posts SET guid = REPLACE(guid, 'localhost', '阿里云SLB的公网IP地址');
 ```
 
-3.打开浏览器，访问http://阿里云Wordpress ECS的公有IP地址/wordpress，确认该网站能够正常打开。
+3.打开浏览器，访问http://阿里云SLB的公网IP地址/wordpress，确认该网站能够正常打开。
+

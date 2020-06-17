@@ -19,17 +19,17 @@ weight: 85
 把wordpress数据库的endpoint拷贝下来。
 ![](/images/Failover/getRDSEndpoint.png)
 
-3.登录到EC2堡垒机里，执行下面的命令登录到WP-Server的EC2里，并把修改Wordpress配置文件里的数据连接字符串信息：
+3.把aliworkshop的密钥对上传到AWS的堡垒机里，然后登录到EC2堡垒机里，执行下面的命令登录到WP-Server的EC2里，并把修改Wordpress配置文件里的数据连接字符串信息：
 ```bash
-ssh -i key-in-zhangjiakou.pem root@10.0.64.97
+ssh -i aliworkshop.pem root@10.0.64.97
 sudo su - 
 cd /usr/share/nginx/html/wordpress
-sed -i "s/阿里云RDS的连接字符串/第2步中记录下来的RDS的Endpoint/g" wp-config.php
+sed -i "s/阿里云RDS的内网连接字符串/AWS上的RDS的Endpoint/g" wp-config.php
 ```
 
 4.在EC2堡垒机里，通过mysql客户端登录到Amazon RDS里，并执行下面的SQL语句：
 ```bash
-mysql -h 第2步中记录下来的RDS的Endpoint -uroot -pInitial-1 wordpress
+mysql -h AWS上的RDS的Endpoint -uroot -pInitial-1 wordpress
 UPDATE wp_options SET option_value = REPLACE(option_value, '阿里云SLB的公网IP地址', 'AWS在宁夏region的ALB的域名') WHERE option_name = 'home' OR option_name = 'siteurl';
 UPDATE wp_posts SET post_content = REPLACE(post_content, '阿里云SLB的公网IP地址', 'AWS在宁夏region的ALB的域名');
 UPDATE wp_posts SET guid = REPLACE(guid, '阿里云SLB的公网IP地址', 'AWS在宁夏region的ALB的域名');

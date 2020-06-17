@@ -269,7 +269,7 @@ Resources:
     Type: 'AWS::EC2::Instance'
     Properties:
       InstanceType: t3.micro
-      ImageId: ami-07172dea9a75e2143
+      ImageId: ami-0f93d881e98e0e9be
       KeyName: !Ref KeyPairName
       NetworkInterfaces:
         - NetworkInterfaceId: !Ref InstanceNetworkInterface

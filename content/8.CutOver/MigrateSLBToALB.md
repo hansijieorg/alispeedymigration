@@ -13,6 +13,12 @@ weight: 84
 具体操作步骤如下：
 
 1.准备运行时环境
+
+{{% notice note %}}
+本次实验中，已经事先把所有需要用到的工具脚本下载到了堡垒机里。因此可以跳过该步骤，直接进行第2步：config.json文件的编辑。
+如果是在其他环境中，可以按照下面的步骤进行运行时环境的准备工作。
+{{% /notice  %}}
+
 本工具需要使用Node.js 8.0及以上版本运行，首先将要安装Node.js运行时框架。
 
 * SSH登录到AWS上的堡垒机，执行下面的命令下载Node.js 8.0:
@@ -33,10 +39,7 @@ npm -version
 如可以正确返回版本信息，即安装正确，如下图所示：
 ![](/images/Failover/512.png)
 
-* 下载迁移工具到本地电脑。
-{{%attachments title="下载链接:" /%}}
-
-使用浏览器下载“https://github.com/liangfb/SLBRulestoALB/archive/V2.0.zip”，并进行解压缩，再上传到AWS的堡垒机上。
+* 使用浏览器下载“https://github.com/liangfb/SLBRulestoALB/archive/V2.0.zip”，并进行解压缩，再上传到AWS的堡垒机上。
 或者SSH登录到AWS上的堡垒机，执行下面的命令下载迁移工具：
 
 ```bash
@@ -109,6 +112,8 @@ node slb.js
 
 * 在ELB控制台可以查看已创建的ALB相关资源：
 ![](/images/Failover/532.png)
+
+迁移过来的ALB会使用default安全组，确保该安全组放行了80端口的流量。
 
 * 把CloudEndure的CutOver操作所部署的Wordpress EC2服务器添加至Target Group中，以完成所有步骤。
 ![](/images/Failover/531.png)

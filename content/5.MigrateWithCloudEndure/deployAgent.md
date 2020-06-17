@@ -15,11 +15,14 @@ weight: 51
 ps aux | grep Ali | grep -v grep
 ```
 
-如果上面的命令有返回结果，则说明运行了安骑士。按照下面的方式进行删除：
+如果上面的命令有返回类似如下图的结果，则说明运行了安骑士。
+![](/images/SyncWithCloudEndure/checkAnqishi.png)
+
+按照下面的方式进行删除：
 ```bash
 curl -sSL http://update.aegis.aliyun.com/download/quartz_uninstall.sh | sudo bash
 rm -rf /usr/local/aegis
-rm /usr/sbin/aliyun-service
+rm -rf /usr/sbin/aliyun-service
 ps aux | grep Ali | grep -v grep | awk '{print $2}' | xargs kill -9
 ```
 

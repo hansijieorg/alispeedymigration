@@ -12,7 +12,7 @@ weight: 23
 
 在界面上，找到名称为：BastionInstance的EC2，并找到其对应的公网ip地址。
 
-2.SSH登录到该堡垒机，并运行下面的命令配置demouser的Access Key和Access Secret Key。
+2.使用准备阶段创建的target-ningxia-key密钥，SSH登录到该堡垒机，并运行下面的命令配置demouser的Access Key和Access Secret Key。
 ```bash
 aws configure
 ```
@@ -26,7 +26,7 @@ Default region name [None]: cn-northwest-1
 
 Default output format [None]: 
 
-3.SSH登录到堡垒机上，执行下面的命令配置阿里云RAM用户的Access Key和Secret Key：
+3.继续在堡垒机上，执行下面的命令配置阿里云RAM用户的Access Key和Secret Key：
 
 ```bash
 aliyun configure

@@ -22,7 +22,4 @@ sed -i "s/\[\ AliYun\ \]/\[\ Ec2\,\ None\ \]/g" /etc/cloud/cloud.cfg
 在CloudEndure Console上选择需要切换的机器，在Console右上角，选择Cutover Mode开始进行模式切换。
 ![](/images/Failover/cutovermode1.png)
 
-3.等待几分钟后，通过阿里云上的用户名和key进行登录后测试,确保IP和大小和蓝图设置都一样。
-
-![](/images/Failover/cutovermode2.png)
-
+3.等待几分钟后，使用root用户和aliworkshop密钥对进行登录后测试。

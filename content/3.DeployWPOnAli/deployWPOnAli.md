@@ -8,7 +8,21 @@ weight: 31
 
 在本实验中，在阿里云上部署应用服务器以及负载均衡器。步骤如下：
 
-1.SSH登录到位于AWS的堡垒机里，执行下面的命令创建Wordpress应用服务器。注意这里的参数：
+1.在阿里云上创建key pair，建议在key的名称里带上你自己的姓名拼音：
+```bash
+aliyun ecs CreateKeyPair \
+--RegionId cn-zhangjiakou \
+--KeyPairName aliworkshop-你的姓名拼音
+```
+
+拷贝输出里的"PrivateKeyBody"部分的内容，并按照如下的形式生成pem文件：
+```
+-----BEGIN RSA PRIVATE KEY-----
+你拷贝出来的内容，注意把其中的\n字符换成回车符
+-----END RSA PRIVATE KEY-----
+```
+
+2.SSH登录到位于AWS的堡垒机里，执行下面的命令创建Wordpress应用服务器。注意这里的参数：
 
 - HostName和InstanceName，建议带上你自己的姓名拼音，与其他用户创建的Wordpress应用服务器区分开。
 
@@ -16,29 +30,30 @@ weight: 31
 
 ```bash
 INSTANCE_ID=`aliyun ecs CreateInstance \
-  --RegionId cn-zhangjiakou \
-  --ZoneId cn-zhangjiakou-a \
-  --InstanceChargeType PostPaid \
-  --IoOptimized optimized \
-  --InstanceType ecs.t5-lc2m1.nano \
-  --ImageId m-8vb8x4wvkib6forv2fjp \
-  --VSwitchId vsw-8vbhstxs1xkqitlt4mr7b \
-  --InternetChargeType PayByTraffic \
-  --InternetMaxBandwidthOut 20 \
-  --SecurityGroupId sg-8vb7zk1se3xxxuj8vkt7 \
-  --HostName WP-Server-你的姓名的拼音 \
-  --InstanceName WP-Server-你的姓名的拼音 \
-  --SecurityEnhancementStrategy Deactive \
-  --SystemDisk.Size 20 \
-  --SystemDisk.Category cloud_efficiency \
-  --KeyPairName key-in-zhangjiakou | jq .InstanceId | sed 's/\"//g'`
+--RegionId cn-zhangjiakou \
+--ZoneId cn-zhangjiakou-a \
+--InstanceChargeType PostPaid \
+--IoOptimized optimized \
+--InstanceType ecs.t5-lc2m1.nano \
+--ImageId m-8vb7gbyd3dc37k15i35c \
+--VSwitchId vsw-8vbcfm497fuqep5o519o9 \
+--InternetChargeType PayByTraffic \
+--InternetMaxBandwidthOut 20 \
+--SecurityGroupId sg-8vb6zywfeuwpwjipsvl9 \
+--HostName WP-Server-你的姓名的拼音 \
+--InstanceName WP-Server-你的姓名的拼音 \
+--SecurityEnhancementStrategy Deactive \
+--SystemDisk.Size 20 \
+--SystemDisk.Category cloud_efficiency \
+--KeyPairName aliworkshop-你的姓名拼音 | jq .InstanceId | sed 's/\"//g'`
 
 sleep 5
 aliyun ecs StartInstance --InstanceId $INSTANCE_ID
-sleep 5
+sleep 10
 aliyun ecs AllocatePublicIpAddress --InstanceId $INSTANCE_ID
 ```
-2.执行下面的命令创建SLB，并关联Wordpress应用服务器。--LoadBalancerName参数值后面跟上你的姓名拼音，以便和其他人创建的SLB进行区分。
+
+3.执行下面的命令创建SLB，并关联Wordpress应用服务器。--LoadBalancerName参数值后面跟上你的姓名拼音，以便和其他人创建的SLB进行区分。
 创建SLB：
 ```bash
 LBID=`aliyun slb CreateLoadBalancer \
@@ -46,7 +61,7 @@ LBID=`aliyun slb CreateLoadBalancer \
 --InternetChargeType paybytraffic \
 --AddressType internet \
 --LoadBalancerName wp-slb-你的姓名的拼音 \
---VpcId vpc-8vbmv41oajoe6q4ul0tr8 \
+--VpcId vpc-8vbimr8d4ffkh3l9xljz7 \
 --MasterZoneId cn-zhangjiakou-a \
 --SlaveZoneId cn-zhangjiakou-b \
 --LoadBalancerSpec slb.s1.small \
@@ -83,17 +98,17 @@ aliyun slb StartLoadBalancerListener \
 
 获取SLB的公网IP地址：
 ```bash
-aliyun slb DescribeLoadBalancers \
+SLBIP=`aliyun slb DescribeLoadBalancers \
 --RegionId cn-zhangjiakou \
---LoadBalancerId $LBID | jq .LoadBalancers | jq .LoadBalancer | jq .[0] | jq .Address
+--LoadBalancerId $LBID | jq .LoadBalancers | jq .LoadBalancer | jq .[0] | jq .Address | sed 's/\"//g'`
 ```
 
 访问SLB的公网IP地址，确保能正常访问:
 ```bash
-curl http://39.99.192.48
+curl http://$SLBIP
 ```
 
-3.执行下面的命令获取该Wordpress应用服务器的公网IP地址和私有IP地址：
+4.执行下面的命令获取该Wordpress应用服务器的公网IP地址和私有IP地址：
 ```bash
 aliyun ecs DescribeInstances --RegionId cn-zhangjiakou|grep $INSTANCE_ID|jq .Instances | jq .Instance | jq .[0] | jq .PublicIpAddress | jq .IpAddress
 aliyun ecs DescribeInstances --RegionId cn-zhangjiakou|grep $INSTANCE_ID|jq .Instances | jq .Instance | jq .[0] | jq .NetworkInterfaces | jq .NetworkInterface | jq .[0] | jq .PrimaryIpAddress

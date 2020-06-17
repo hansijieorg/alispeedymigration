@@ -40,24 +40,41 @@ INSTANCE_ID=`aliyun ecs CreateInstance \
   --IoOptimized optimized \
   --InstanceType ecs.t5-lc2m1.nano \
   --ImageId centos_8_0_x64_20G_alibase_20200218.vhd \
-  --VSwitchId vsw-8vbhstxs1xkqitlt4mr7b \
+  --VSwitchId vsw-8vbcfm497fuqep5o519o9 \
   --InternetChargeType PayByTraffic \
   --InternetMaxBandwidthOut 50 \
-  --SecurityGroupId sg-8vb7zk1se3xxxuj8vkt7 \
+  --SecurityGroupId sg-8vbas0n53djf7fnxjiw6 \
   --HostName VPN-Server-你自己的姓名拼音 \
   --InstanceName VPN-Server-你自己的姓名拼音 \
   --SecurityEnhancementStrategy Deactive \
   --SystemDisk.Size 20 \
   --SystemDisk.Category cloud_efficiency \
-  --KeyPairName key-in-zhangjiakou | jq .InstanceId | sed 's/\"//g'`
+  --KeyPairName aliworkshop--你的姓名拼音 | jq .InstanceId | sed 's/\"//g'`
 
 sleep 5
 aliyun ecs StartInstance --InstanceId $INSTANCE_ID
-sleep 5
+sleep 10
 aliyun ecs AllocatePublicIpAddress --InstanceId $INSTANCE_ID
 ```
 
-4.阿里云的VPN实例的安全组已经添加了相应的、针对500和4500端口的规则
+4.阿里云的VPN实例的安全组已经添加了相应的、针对500和4500端口的规则。另外，需要再执行下面的命令，把AWS的网段加入阿里云上所使用的安全组：
+```bash
+aliyun ecs AuthorizeSecurityGroup \
+--RegionId cn-zhangjiakou \
+--SecurityGroupId sg-8vbas0n53djf7fnxjiw6 \
+--IpProtocol all \
+--PortRange='-1/-1' \
+--SourceCidrIp 10.x.0.0/16 \
+--Priority 1
+
+aliyun ecs AuthorizeSecurityGroup \
+--RegionId cn-zhangjiakou \
+--SecurityGroupId sg-8vb6zywfeuwpwjipsvl9 \
+--IpProtocol all \
+--PortRange='-1/-1' \
+--SourceCidrIp 10.x.0.0/16 \
+--Priority 1
+```
 
 5.执行下面的命令，从而在阿里云的私有子网里添加一条路由条目，目标网段为AWS的VPC CIDR（10.x.0.0/16），下一跳为阿里云上的VPN虚拟机的实例id。
 {{% notice note %}}
@@ -67,7 +84,7 @@ aliyun ecs AllocatePublicIpAddress --InstanceId $INSTANCE_ID
 ```bash
 aliyun vpc CreateRouteEntry \
   --RegionId cn-zhangjiakou \
-  --RouteTableId vtb-8vb2xdqu3khw2lv0kuwfa \
+  --RouteTableId vtb-8vbkwbrxeern7wdgfg21x \
   --DestinationCidrBlock 10.x.0.0/16 \
   --NextHopId $INSTANCE_ID
 ```

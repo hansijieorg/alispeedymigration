@@ -8,12 +8,28 @@ weight: 51
 
 创建AWS DMS终端节点的步骤如下：
 
-1.打开宁夏region的DMS console：https://cn-northwest-1.console.amazonaws.cn/dms/v2/home?region=cn-northwest-1#replicationInstances
+1.SSH到AWS上的堡垒机，使用下面的命令为阿里云RDS申请外网地址：
+```bash
+aliyun rds AllocateInstancePublicConnection \
+--DBInstanceId $RDSID \
+--ConnectionStringPrefix aliworkshop-你的姓名拼英 \
+--Port 3306
+```
 
-找到通过Landing Zone的CloudFormation脚本创建的DMS复制实例，如下图所示。
-![](/images/DataSyncWithDMS/selectDMSInstance.png)
+获取并记录阿里云RDS的外网地址：
+```bash
+aliyun rds DescribeDBInstanceNetInfo \
+--DBInstanceId $RDSID \
+| jq .DBInstanceNetInfos \
+| jq .DBInstanceNetInfo \
+| jq .[1] \
+| jq .ConnectionString \
+| sed 's/\"//g'
+```
 
-2.创建源终端节点：在左边菜单上选择【终端节点】菜单，然后在右边的界面上选择【创建终端节点】按钮。
+2.打开宁夏region的DMS console：https://cn-northwest-1.console.amazonaws.cn/dms/v2/home?region=cn-northwest-1#replicationInstances
+
+创建源终端节点：在左边菜单上选择【终端节点】菜单，然后在右边的界面上选择【创建终端节点】按钮。
 ![](/images/DataSyncWithDMS/selectCreateEndpoint.png)
 在创建终端节点的界面上：
 
@@ -23,7 +39,7 @@ weight: 51
 
 * "源引擎"选择：mysql
 
-* "服务器名称"输入之前所获得的阿里云RDS的连接字符串。
+* "服务器名称"输入之前所获得的阿里云RDS的外网连接字符串。
 
 * "端口"输入：3306
 
