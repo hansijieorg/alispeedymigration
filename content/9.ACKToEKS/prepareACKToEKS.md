@@ -10,11 +10,21 @@ weight: 92
 登录到AWS的Linux工作服务器上，进行如下的操作，从而在ACK上安装velero。
 
 1.下载velero
+{{% notice note %}}
+本次实验中，已经事先把velero工具下载到了堡垒机里。因此可以跳过该步骤，直接进行第2步：bucket的创建。
+如果是在其他环境中，可以按照下面的步骤进行运行时环境的准备工作。
+{{% /notice  %}}
+
 ```bash
-wget https://github.com/vmware-tanzu/velero/releases/download/v1.3.2/velero-v1.3.2-linux-amd64.tar.gz
-tar -xvf velero-v1.3.2-linux-amd64.tar.gz
-cd velero-v1.3.2-linux-amd64
+wget wget https://github.com/vmware-tanzu/velero/releases/download/v1.4.0/velero-v1.4.0-linux-amd64.tar.gz
+tar -xvf velero-v1.4.0-linux-amd64.tar.gz
+cd velero-v1.4.0-linux-amd64
 sudo cp velero /usr/local/bin/
+```
+
+查看velero的版本：
+```bash
+velero version
 ```
 
 2.在宁夏region创建bucket，该bucket用于存放从ACK上备份的应用数据。为了避免冲突，bucket的名称可以带上自己的姓名拼音。
@@ -46,6 +56,12 @@ echo "aws_secret_access_key = <secret key>" >> credentials-velero
 ```
 
 4.在ACK里安装velero，注意把下面的"<姓名拼音>"改为你自己的值。
+先确认当前环境为阿里云的ACK里，确保下面的命令输出内容里能看到cn-zhangjiakou字样。
+```bash
+kubectl get nodes
+```
+
+安装velero：
 ```bash
 export VELERO_BUCKET=velero-s3-bucket-<姓名拼音>
 export AWS_DEFAULT_REGION=cn-northwest-1
@@ -65,16 +81,33 @@ kubectl get pods -n velero --watch
 ```
 
 5.在EKS里安装velero。
-假设已经按照AWS的官方文档安装好了名为echo-cluster的EKS集群：https://docs.amazonaws.cn/eks/latest/userguide/getting-started-console.html
+假设已经按照AWS的官方文档安装好了EKS集群：https://docs.amazonaws.cn/eks/latest/userguide/getting-started-console.html
 
-执行下面的命令，在.kube/config文件里添加新的集群的信息：
+或者按照下面的方式进行创建一个新的、名称为aliworkshop的EKS集群：
+```bash
+eksctl create cluster \
+--name aliworkshop \
+--version 1.16 \
+--region cn-northwest-1 \
+--nodegroup-name standard-workers \
+--node-type t3.medium \
+--nodes 1 \
+--nodes-min 1 \
+--nodes-max 3 \
+--ssh-access \
+--ssh-public-key target-ningxia-key \
+--vpc-public-subnets <部署Landing Zone的时候创建的、名称带有DMZ的两个子网> \
+--managed
+```
+
+并假设该EKS集群的名称为aliworkshop，则执行下面的命令，在.kube/config文件里添加新的集群的信息：
 ```bash
 kubectl config current-context
-aws eks update-kubeconfig --name echo-cluster --profile default --region cn-northwest-1
+aws eks update-kubeconfig --name aliworkshop --profile default --region cn-northwest-1
 kubectl config current-context
 ```
 
-确认了当前kubectl连接的集群为EKS上的echo-cluster以后，执行下面的命令，从而在EKS上安装velero。
+确认了当前kubectl连接的集群为EKS上的aliworkshop以后，执行下面的命令，从而在EKS上安装velero。
 注意把下面的"<姓名拼音>"改为你自己的值。
 ```bash
 export AWS_DEFAULT_REGION=cn-northwest-1

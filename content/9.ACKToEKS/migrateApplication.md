@@ -19,6 +19,7 @@ kubectl config get-contexts
 ```bash
 kubectl config use-context <ACK集群的namespace>
 kubectl config current-context
+kubectl get nodes
 ```
 
 2.在ACK上备份源系统，注意把<编号>改为工作人员提供给你的数字。
@@ -64,7 +65,7 @@ velero restore create --from-backup game-backup-<姓名拼音> --include-namespa
 kubectl edit deployment deployment-2048 -n 2048-game<编号>
 ```
 
-搜索"registry.cn-zhangjiakou.aliyuncs.com"，从而找到image选项，并将其改为：<12位的aws账号>.dkr.ecr.cn-northwest-1.amazonaws.com.cn/prodrepo:2048-game
+搜索"registry-vpc.cn-zhangjiakou.aliyuncs.com"，从而找到image选项，并将其改为：<12位的aws账号>.dkr.ecr.cn-northwest-1.amazonaws.com.cn/prodrepo:2048-game
 保存以后，监控EKS上deployment的启动情况：
 ```bash
 kubectl get deployments -n 2048-game<编号> --watch

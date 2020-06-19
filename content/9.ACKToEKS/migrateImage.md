@@ -10,19 +10,19 @@ weight: 93
 
 1.登录到ACR（阿里云镜像仓库），并把应用所用到的镜像下载到本地服务器。其中的"xxxx"是工作人员所提供的阿里云RAM账号。
 ```bash
-sudo docker login --username=xxxx@1244465442914189 registry.cn-zhangjiakou.aliyuncs.com
-sudo docker pull registry.cn-zhangjiakou.aliyuncs.com/ackrepo/prodrepo:2048-game
+sudo docker login --username=xxxx registry.cn-zhangjiakou.aliyuncs.com
+sudo docker pull registry.cn-zhangjiakou.aliyuncs.com/aliworkshop/aligame:2048-game
 ```
 
 2.在AWS的ECR里创建名为prodrepo的镜像仓库。
 ```bash
-aws ecr create-repository --repository-name prodrepo --region cn-northwest-1
+aws ecr create-repository --repository-name aliworkshop --region cn-northwest-1
 ```
 
 3.把镜像推送到ECR上：
 ```bash
-aws ecr get-login-password --region cn-northwest-1 | docker login --username AWS --password-stdin <12位的aws账号>.dkr.ecr.cn-northwest-1.amazonaws.com.cn
-sudo docker tag registry.cn-zhangjiakou.aliyuncs.com/ackrepo/prodrepo:2048-game <12位的aws账号>.dkr.ecr.cn-northwest-1.amazonaws.com.cn/prodrepo:2048-game
-sudo docker push <12位的aws账号>.dkr.ecr.cn-northwest-1.amazonaws.com.cn/prodrepo:2048-game
+aws ecr get-login-password --region cn-northwest-1 | sudo docker login --username AWS --password-stdin <12位的aws账号>.dkr.ecr.cn-northwest-1.amazonaws.com.cn
+sudo docker tag registry.cn-zhangjiakou.aliyuncs.com/aliworkshop/aligame:2048-game <12位的aws账号>.dkr.ecr.cn-northwest-1.amazonaws.com.cn/aliworkshop:2048-game
+sudo docker push <12位的aws账号>.dkr.ecr.cn-northwest-1.amazonaws.com.cn/aliworkshop:2048-game
 ```
 

@@ -40,10 +40,10 @@ INSTANCE_ID=`aliyun ecs CreateInstance \
   --IoOptimized optimized \
   --InstanceType ecs.t5-lc2m1.nano \
   --ImageId centos_8_0_x64_20G_alibase_20200218.vhd \
-  --VSwitchId vsw-8vbcfm497fuqep5o519o9 \
+  --VSwitchId vsw-8vbwd1gubib8d2smt4etl \
   --InternetChargeType PayByTraffic \
   --InternetMaxBandwidthOut 50 \
-  --SecurityGroupId sg-8vbas0n53djf7fnxjiw6 \
+  --SecurityGroupId sg-8vbcnwimxknppj8jbu50 \
   --HostName VPN-Server-你自己的姓名拼音 \
   --InstanceName VPN-Server-你自己的姓名拼音 \
   --SecurityEnhancementStrategy Deactive \
@@ -61,7 +61,7 @@ aliyun ecs AllocatePublicIpAddress --InstanceId $INSTANCE_ID
 ```bash
 aliyun ecs AuthorizeSecurityGroup \
 --RegionId cn-zhangjiakou \
---SecurityGroupId sg-8vbas0n53djf7fnxjiw6 \
+--SecurityGroupId sg-8vbcnwimxknppj8jbu50 \
 --IpProtocol all \
 --PortRange='-1/-1' \
 --SourceCidrIp 10.x.0.0/16 \
@@ -69,7 +69,7 @@ aliyun ecs AuthorizeSecurityGroup \
 
 aliyun ecs AuthorizeSecurityGroup \
 --RegionId cn-zhangjiakou \
---SecurityGroupId sg-8vb6zywfeuwpwjipsvl9 \
+--SecurityGroupId sg-8vbcnwimxknppj8jbu50 \
 --IpProtocol all \
 --PortRange='-1/-1' \
 --SourceCidrIp 10.x.0.0/16 \

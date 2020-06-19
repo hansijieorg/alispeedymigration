@@ -8,41 +8,39 @@ weight: 91
 
 请遵循以下步骤，从而在ACK上部署应用系统：
 
-1.使用RAM子账号登录阿里云控制台：https://signin.aliyun.com/1244465442914189.onaliyun.com/login.htm
-
-用户名格式为：xxxxx@1244465442914189.onaliyun.com，密码为：Initial-1
-
-2.进入镜像仓库控制台：https://cr.console.aliyun.com/cn-zhangjiakou/new
-
-点击【设置Registry登录密码】按钮，并在弹出界面上，输入密码为：Initial-1
-
-3.获得ACK集群的连接信息。进入ACK控制台：https://cs.console.aliyun.com/?spm=5176.8351553.nav-right.45.18641991YpiBs2#/k8s/cluster/list
-
-找到并点击名为ack-game的链接
-![](/images/ACKToEKS/ackclusterlist.png)
-
-找到如下图所示的内容，点击【复制】按钮，把连接信息拷贝下来。
-![](/images/ACKToEKS/getACKConnection.png)
-
-4.在Linux工作服务器上，执行下面的命令：
+1.SSH到AWS的堡垒机上，执行下面的命令，获取阿里云ACK集群上的凭据：
 ```bash
+cd ~/
+rm -rf ~/.kube
 mkdir ~/.kube
 cd ~/.kube
-vi config
+wget https://ali-migrate-demo.s3.cn-northwest-1.amazonaws.com.cn/config
 ```
 
-并把上一步中拷贝的集群连接信息复制到config文件里，然后执行下面的命令确认能够成功连接到ACK集群：
+在获得了config文件以后，执行下面的命令确认能够成功连接到ACK集群：
 ```bash
 kubectl get svc
 ```
 如果输出能看到如下的输出，则说明成功连接上了ACK集群。
 ![](/images/ACKToEKS/getSvcFromACK.png)
 
-5.把下面列出的、用于部署环境相关的脚本上传到AWS的堡垒机上。
+2.把下面列出的、用于部署环境相关的脚本上传到AWS的堡垒机上。
 {{%attachments title="下载链接:" /%}}
 
-把3个模板文件和1个shell脚本文件下载同一个目录下以后，执行如下的命令，其中的"编号"会由工作人员提供。
+把3个模板文件和1个shell脚本文件下载同一个目录下，或者也可以在AWS的堡垒机上执行下面的命令：
 ```bash
+cd ~/
+mkdir ackgame
+cd ackgame
+wget http://gotoaws.cloudguru.run/9.ACKToEKS/deploySourceOnACK.files/2048-deployment.yaml.template
+wget http://gotoaws.cloudguru.run/9.ACKToEKS/deploySourceOnACK.files/2048-namespace.yaml.template
+wget http://gotoaws.cloudguru.run/9.ACKToEKS/deploySourceOnACK.files/2048-service.yaml.template
+wget http://gotoaws.cloudguru.run/9.ACKToEKS/deploySourceOnACK.files/create-src.sh
+```
+
+文件下载以后，执行如下的命令，其中的"编号"为整个实验最开始之前为你分配的编号：
+```bash
+chmod u+x create-src.sh
 ./create-src.sh 编号
 ```
 

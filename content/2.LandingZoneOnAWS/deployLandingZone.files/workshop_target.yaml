@@ -81,7 +81,7 @@ Resources:
     Properties:
       CidrBlock: !Ref VpcCidr
       EnableDnsSupport: true
-      EnableDnsHostnames: false
+      EnableDnsHostnames: true
       InstanceTenancy: default
       Tags:
       - Key: Name
@@ -268,8 +268,8 @@ Resources:
   BastionVPNEC2Instance:
     Type: 'AWS::EC2::Instance'
     Properties:
-      InstanceType: t3.micro
-      ImageId: ami-0f93d881e98e0e9be
+      InstanceType: t3.large
+      ImageId: ami-0c51b191d9aa045ed
       KeyName: !Ref KeyPairName
       NetworkInterfaces:
         - NetworkInterfaceId: !Ref InstanceNetworkInterface

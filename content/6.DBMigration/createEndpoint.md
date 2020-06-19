@@ -12,7 +12,7 @@ weight: 51
 ```bash
 aliyun rds AllocateInstancePublicConnection \
 --DBInstanceId $RDSID \
---ConnectionStringPrefix aliworkshop-你的姓名拼英 \
+--ConnectionStringPrefix aliworkshop-你的姓名拼音 \
 --Port 3306
 ```
 

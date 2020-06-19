@@ -10,6 +10,7 @@ weight: 114
 
 1.SSH登录到EMR的master节点，确认数据已经迁移到了对应的hdfs目录下：
 ```bash
+sudo su - hadoop
 hdfs dfs -ls /user/hive/warehouse/demodw.db/bank_data
 ```
 

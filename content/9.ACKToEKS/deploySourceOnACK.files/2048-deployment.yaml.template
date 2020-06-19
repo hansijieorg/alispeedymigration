@@ -14,7 +14,7 @@ spec:
         app: "2048"
     spec:
       containers:
-      - image: registry.cn-zhangjiakou.aliyuncs.com/ackrepo/prodrepo:2048-game
+      - image: registry-vpc.cn-zhangjiakou.aliyuncs.com/aliworkshop/aligame:2048-game
         imagePullPolicy: Always
         name: "2048"
         ports:

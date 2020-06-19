@@ -36,10 +36,10 @@ INSTANCE_ID=`aliyun ecs CreateInstance \
 --IoOptimized optimized \
 --InstanceType ecs.t5-lc2m1.nano \
 --ImageId m-8vb7gbyd3dc37k15i35c \
---VSwitchId vsw-8vbcfm497fuqep5o519o9 \
+--VSwitchId vsw-8vbwd1gubib8d2smt4etl \
 --InternetChargeType PayByTraffic \
 --InternetMaxBandwidthOut 20 \
---SecurityGroupId sg-8vb6zywfeuwpwjipsvl9 \
+--SecurityGroupId sg-8vbbc7cf61pctx9nj5kl \
 --HostName WP-Server-你的姓名的拼音 \
 --InstanceName WP-Server-你的姓名的拼音 \
 --SecurityEnhancementStrategy Deactive \

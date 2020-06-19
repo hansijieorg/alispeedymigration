@@ -61,13 +61,14 @@
                 "Name": "cfnCore"
               },
               "TerminationProtected" : "false",
-              "Ec2SubnetId" : {"Ref" : "EMRSubnetId"}
+              "Ec2SubnetId" : {"Ref" : "EMRSubnetId"},
+              "Ec2KeyName": {"Ref": "EC2KeyPair"}
             },
             "Name": "AliMigrationCluster",
-            "Applications" : [{"Name": "Hadoop"},{"Name": "Hive"},{"Name": "HBase"},{"Name": "Spark"},{"Name": "Flink"},{"Name": "Hue"}],
+            "Applications" : [{"Name": "Hadoop"},{"Name": "Hive"},{"Name": "HBase"},{"Name": "Spark"},{"Name": "Flink"},{"Name": "Hue"},{"Name": "ZooKeeper"}],
             "JobFlowRole" : {"Ref": "emrEc2InstanceProfile"},
             "ServiceRole" : {"Ref": "emrRole"},
-            "ReleaseLabel" : "emr-5.30.0",
+            "ReleaseLabel" : "emr-5.29.0",
             "VisibleToAllUsers" : true
           }
         },

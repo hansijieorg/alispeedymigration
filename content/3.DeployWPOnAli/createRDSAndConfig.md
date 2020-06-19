@@ -23,7 +23,7 @@ RDSINFO=`aliyun rds CreateDBInstance \
 --InstanceNetworkType VPC \
 --ConnectionMode Standard \
 --VPCId vpc-8vbimr8d4ffkh3l9xljz7 \
---VSwitchId vsw-8vbcfm497fuqep5o519o9`
+--VSwitchId vsw-8vbwd1gubib8d2smt4etl`
 ```
 
 运行下面的命令获得RDS实例的状态：

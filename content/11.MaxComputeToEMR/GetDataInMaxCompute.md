@@ -6,11 +6,10 @@ weight: 111
 
 ## 检查需要从MaxCompute里迁移的表的数据
 
-在本实验，会进入MaxCompute里，确认需要被迁移的数据。步骤如下:
+在本实验，会显示MaxCompute里、确认需要被迁移的数据。步骤如下:
 
-1.进入DataWorks控制台：https://workbench.data.aliyun.com/console?#/projectlist
-
-会看到一个名为demodw的工作空间，点击该工作空间，进入DataStudio。
+1.进入DataWorks控制台，进入工作空间，点击你的工作空间，进入DataStudio。类似下图:
+![](/images/MaxComputeToEMR/dataworks1.png)
 
 2.在DataStudio左侧，点击【公共表】按钮，如下图所示。
 ![](/images/MaxComputeToEMR/tableInDataStudio.png)

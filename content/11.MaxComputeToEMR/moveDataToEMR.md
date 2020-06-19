@@ -8,7 +8,7 @@ weight: 113
 
 在Linux工作服务器（已经事先安装好了DataX工具）上进行如下的配置，从而把数据从MaxCompute里迁移到EMR上：
 
-1.登录到事先安装好了DataX工具的Linux EC2工作服务器，编辑已经准备好的odps2hdfs.json文件，并在如下所示的部分修改为符合你的信息：
+1.登录到事先安装好了DataX工具的堡垒机上，编辑已经准备好的odps2hdfs.json文件，并在如下所示的部分修改为符合你的信息：
 ```bash
 vi ~/odps2hdfs.json
 {
@@ -29,9 +29,9 @@ vi ~/odps2hdfs.json
                             "*"
                         ],
                         "odpsServer": "http://service.odps.aliyun.com/api",
-                        "project": "sijiedemodw",
+                        "project": "dean_dataworks_bj",
                         "table": "bank_data",
-                        "tunnelServer": "http://dt.cn-zhangjiakou.maxcompute.aliyun.com"
+                        "tunnelServer": "http://dt.cn-beijing.maxcompute.aliyun.com"
                     }
                 },
                 "writer": {
