@@ -38,7 +38,7 @@ Blueprint详细可配置的参数如下:
 
 * Tag：标签，设置 EC2 标签，如果要设置名称，注意首字母 Name 是大写N
 
-* 磁盘类型，页面上默认是 io1，如果希望希望节约成本，选择了为 SSD 即可，代表 gp2 类型
+* 磁盘类型，页面上默认是 io1，如果希望希望节约成本，选择其为 SSD 即可，代表 gp2 类型
 
 确定以后，选择保存。如下图所示：
 ![](/images/SyncWithCloudEndure/blueprint1.png)

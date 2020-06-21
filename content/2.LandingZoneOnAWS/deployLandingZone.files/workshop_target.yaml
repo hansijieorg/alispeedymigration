@@ -269,7 +269,7 @@ Resources:
     Type: 'AWS::EC2::Instance'
     Properties:
       InstanceType: t3.large
-      ImageId: ami-0c51b191d9aa045ed
+      ImageId: ami-0504e901bacc0ba7f
       KeyName: !Ref KeyPairName
       NetworkInterfaces:
         - NetworkInterfaceId: !Ref InstanceNetworkInterface

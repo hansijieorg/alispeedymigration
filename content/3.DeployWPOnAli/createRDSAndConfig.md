@@ -36,6 +36,15 @@ aliyun rds DescribeDBInstances \
 
 直到返回Running，再进行后续的操作。
 
+为RDS添加标签：
+```bash
+aliyun rds AddTagsToResource \
+--RegionId cn-zhangjiakou \
+--DBInstanceId $RDSID \
+--Tag.1.key='author' \
+--Tag.1.value='你的姓名拼音'
+```
+
 创建RDS账号：
 ```bash
 RDSID=`echo $RDSINFO | jq .DBInstanceId | sed 's/\"//g'`

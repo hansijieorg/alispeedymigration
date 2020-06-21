@@ -113,7 +113,9 @@ node slb.js
 * 在ELB控制台可以查看已创建的ALB相关资源：
 ![](/images/Failover/532.png)
 
+{{% notice note %}}
 迁移过来的ALB会使用default安全组，确保该安全组放行了80端口的流量。
+{{% /notice  %}}
 
 * 把CloudEndure的CutOver操作所部署的Wordpress EC2服务器添加至Target Group中，以完成所有步骤。
 ![](/images/Failover/531.png)

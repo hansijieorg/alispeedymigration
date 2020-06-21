@@ -6,7 +6,8 @@ weight: 111
 
 ## 检查需要从MaxCompute里迁移的表的数据
 
-在本实验，会显示MaxCompute里、确认需要被迁移的数据。步骤如下:
+在本实验，会显示MaxCompute里、确认需要被迁移的数据。
+整个过程通过截图的形式展现，因为MaxCompute里的数据已经准备好了，所以并不会实际的访问阿里云DataWorks以及MaxCompute里。
 
 1.进入DataWorks控制台，进入工作空间，点击你的工作空间，进入DataStudio。类似下图:
 ![](/images/MaxComputeToEMR/dataworks1.png)

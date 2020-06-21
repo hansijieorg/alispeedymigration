@@ -49,7 +49,7 @@ INSTANCE_ID=`aliyun ecs CreateInstance \
   --SecurityEnhancementStrategy Deactive \
   --SystemDisk.Size 20 \
   --SystemDisk.Category cloud_efficiency \
-  --KeyPairName aliworkshop--你的姓名拼音 | jq .InstanceId | sed 's/\"//g'`
+  --KeyPairName aliworkshop-你的姓名拼音 | jq .InstanceId | sed 's/\"//g'`
 
 sleep 5
 aliyun ecs StartInstance --InstanceId $INSTANCE_ID

@@ -12,15 +12,14 @@ weight: 31
 ```bash
 aliyun ecs CreateKeyPair \
 --RegionId cn-zhangjiakou \
---KeyPairName aliworkshop-你的姓名拼音
+--KeyPairName aliworkshop-你的姓名拼音 \
+| jq .PrivateKeyBody \
+| sed 's/\"//g' \
+| sed 's/\\n/\n/g' > ~/aliworkshop-你的姓名拼音.pem
+chmod 400 ~/aliworkshop-你的姓名拼音.pem
 ```
 
-拷贝输出里的"PrivateKeyBody"部分的内容，并按照如下的形式生成pem文件：
-```
------BEGIN RSA PRIVATE KEY-----
-你拷贝出来的内容，注意把其中的\n字符换成回车符
------END RSA PRIVATE KEY-----
-```
+确认生成了名为"aliworkshop-你的姓名拼音.pem"的keypair文件。
 
 2.SSH登录到位于AWS的堡垒机里，执行下面的命令创建Wordpress应用服务器。注意这里的参数：
 
@@ -106,6 +105,7 @@ SLBIP=`aliyun slb DescribeLoadBalancers \
 访问SLB的公网IP地址，确保能正常访问:
 ```bash
 curl http://$SLBIP
+echo $SLBIP
 ```
 
 4.执行下面的命令获取该Wordpress应用服务器的公网IP地址和私有IP地址：
