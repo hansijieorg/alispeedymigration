@@ -39,7 +39,7 @@ npm -version
 如可以正确返回版本信息，即安装正确，如下图所示：
 ![](/images/Failover/512.png)
 
-* 使用浏览器下载“https://github.com/liangfb/SLBRulestoALB/archive/V2.0.zip”， 并进行解压缩，再上传到AWS的堡垒机上。
+* 使用浏览器下载“https://github.com/liangfb/SLBRulestoALB/archive/V2.0.zip”。并进行解压缩，再上传到AWS的堡垒机上。
 或者SSH登录到AWS上的堡垒机，执行下面的命令下载迁移工具：
 
 ```bash
