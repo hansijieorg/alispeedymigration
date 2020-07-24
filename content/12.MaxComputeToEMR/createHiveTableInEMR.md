@@ -1,7 +1,7 @@
 ﻿---
 title: "在Amazon EMR集群里创建Hive表"
 chapter: false
-weight: 112
+weight: 122
 ---
 
 ## 在Amazon EMR集群里创建Hive表

@@ -1,7 +1,7 @@
 ﻿---
 title: "迁移MaxCompute的数据到EMR里 (可选)"
 chapter: false
-weight: 110
+weight: 120
 ---
 
 ## 迁移MaxCompute的数据到EMR里

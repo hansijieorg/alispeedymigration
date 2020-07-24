@@ -1,7 +1,7 @@
 ﻿---
 title: "检查需要从MaxCompute里迁移的表的数据"
 chapter: false
-weight: 111
+weight: 121
 ---
 
 ## 检查需要从MaxCompute里迁移的表的数据
