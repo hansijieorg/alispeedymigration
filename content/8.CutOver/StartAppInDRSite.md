@@ -19,7 +19,7 @@ weight: 85
 把wordpress数据库的endpoint拷贝下来。
 ![](/images/Failover/getRDSEndpoint.png)
 
-3.把名为"aliworkshop-你的姓名拼音"的密钥对上传到AWS的堡垒机里，然后登录到EC2堡垒机里，执行下面的命令登录到WP-Server的EC2里，并把修改Wordpress配置文件里的数据连接字符串信息：
+3.登录到EC2堡垒机里，执行下面的命令登录到WP-Server的EC2里，并把修改Wordpress配置文件里的数据连接字符串信息：
 ```bash
 ssh -i aliworkshop-你的姓名拼音.pem root@"WP-Server"的EC2的私有IP地址
 sudo su - 

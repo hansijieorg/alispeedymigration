@@ -18,7 +18,7 @@ Blueprint详细可配置的参数如下:
 
 * Launch Type：On-Demand
 
-* Subnet：子网选择名称包含ALIMIGRATIONPrivateSubnet1的子网
+* Subnet：子网选择名称包含ALIMIGRATIONPrivateSubnet1的子网（注意可能会有多个名称包含ALIMIGRATIONPrivateSubnet1的子网，确保其对应的VPC ID是你创建的VPC）。
 
 * Security Group：选择名称包含SG-WebServer的安全组
 

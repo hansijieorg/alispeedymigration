@@ -1,0 +1,218 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create VPC Resource
+Parameters:
+  VpcCidr:
+    Description: The VPC CIDR
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.0.0/16
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  SubnetCidr1:
+    Description: The Public Subnet CIDR in 1a
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.0.0/24
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  SubnetCidr2:
+    Description: The Public Subnet CIDR in 1b
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.32.0/24
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  SubnetCidr3:
+    Description: The Private Subnet CIDR in 1a
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.64.0/24
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  SubnetCidr4:
+    Description: The Private Subnet CIDR in 1b
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.0.96.0/24
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.  
+  DMSInstanceName:
+    Description: DMS instance Name
+    Type: String
+    Default: bcdrdms#
+  DMSSubnetGroupName:
+    Description: Subnet Group Name of DMS instance
+    Type: String
+    Default: dmssubnet#
+
+Resources:
+  BCDRVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+      Tags:
+      - Key: Name
+        Value: ALIMIGRATIONVPC
+  WordpressSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: 'AWS::Region'
+      CidrBlock: !Ref SubnetCidr1
+      MapPublicIpOnLaunch : true
+      Tags:
+        - Key: Name
+          Value: ALIMIGRATIONDMZSubnet1
+      VpcId: !Ref BCDRVPC
+  WordpressSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: 'AWS::Region'
+      CidrBlock: !Ref SubnetCidr2
+      MapPublicIpOnLaunch : true
+      Tags:
+        - Key: Name
+          Value: ALIMIGRATIONDMZSubnet2
+      VpcId: !Ref BCDRVPC
+  WordpressSubnet3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: 'AWS::Region'
+      CidrBlock: !Ref SubnetCidr3
+      Tags:
+        - Key: Name
+          Value: ALIMIGRATIONPrivateSubnet1
+      VpcId: !Ref BCDRVPC
+  WordpressSubnet4:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: 'AWS::Region'
+      CidrBlock: !Ref SubnetCidr4
+      Tags:
+        - Key: Name
+          Value: ALIMIGRATIONPrivateSubnet2
+      VpcId: !Ref BCDRVPC
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: WordpressInternetGateway
+  VPCGatewayAttach:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref BCDRVPC
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref BCDRVPC
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable
+  WordPressSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref WordpressSubnet1
+  WordPressSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref WordpressSubnet2
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref BCDRVPC
+  WordPressSubnet3RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      SubnetId: !Ref WordpressSubnet3
+  WordPressSubnet4RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      SubnetId: !Ref WordpressSubnet4
+  # NatGateway
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+        - EIP
+        - AllocationId
+      SubnetId: !Ref WordpressSubnet1
+      Tags:
+      - Key: Name
+        Value: NatGateway
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  NatRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  SGDMS:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: SG-DMS
+      GroupDescription: Security Group for DMS
+      VpcId: !Ref BCDRVPC
+      SecurityGroupIngress:
+      - IpProtocol: '-1'
+        FromPort: '-1'
+        ToPort: '-1'
+        CidrIp: !Ref VpcCidr
+
+# DMS
+  DMSReplicationInstance:
+    Type: "AWS::DMS::ReplicationInstance"
+    Properties:
+      AllocatedStorage: 100
+      ReplicationInstanceClass: dms.c4.large
+      ReplicationInstanceIdentifier: !Ref DMSInstanceName
+      ReplicationSubnetGroupIdentifier: !Ref ReplicationSubnetGroup
+      Tags:
+        - Key: Name
+          Value: bcdr-dms-replicationinstance
+      VpcSecurityGroupIds:
+        - !Ref SGDMS
+  ReplicationSubnetGroup:
+    Type: "AWS::DMS::ReplicationSubnetGroup"
+    Properties:
+      ReplicationSubnetGroupDescription: !Ref DMSSubnetGroupName
+      ReplicationSubnetGroupIdentifier: !Ref DMSSubnetGroupName
+      SubnetIds:
+        - !Ref WordpressSubnet1
+        - !Ref WordpressSubnet2
+        - !Ref WordpressSubnet3
+        - !Ref WordpressSubnet4

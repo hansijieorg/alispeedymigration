@@ -94,23 +94,35 @@ aws ec2 describe-instances --filters Name=tag:Name,Values=BastionVPNInstance --q
 
 5.在堆栈详细信息处输入如下信息，点击【下一步】
 
-* 堆栈名称输入：alimigration
+* 堆栈名称输入：alimigration#（#为你对应的编号）
 
-* DBName输入：wordpressdb
+* DBName输入：wordpressdb#（#为你对应的编号）
 
 * DBPassword输入：Initial-1
 
 * DBUser输入：root
 
+* DBSubnetGroupName输入：dbsubnet#（#为你对应的编号）
+
+* DMSInstanceName输入：bcdrdms#（#为你对应的编号）
+
+* DMSSubnetGroupName输入：dmssubnet#（#为你对应的编号）
+
 * SubnetCidr1：把缺省值中的第二个0换成对应你的编号（10.x.0.0/24）
 
-* SubnetCidr1：把缺省值中的第二个0换成对应你的编号（10.x.64.0/24）
+* SubnetCidr2：把缺省值中的第二个0换成对应你的编号（10.x.32.0/24）
+
+* SubnetCidr3：把缺省值中的第二个0换成对应你的编号（10.x.64.0/24）
+
+* SubnetCidr4：把缺省值中的第二个0换成对应你的编号（10.x.96.0/24）
 
 * VpcCidr：把缺省值中的第二个0换成对应你的编号（10.x.0.0/16）
 
 * Keypair：选择预先创建的Keypair：target-ningxia-key
 
 * EC2InstancePrivateIP: EC2堡垒机实例的私有IP地址，把缺省值中的第二个0换成对应你的编号（10.x.0.5）
+
+* BastionInstanceTag输入：BastionInstance#（#为你对应的编号）
 
 ![](/images/LandingZoneOfDRSite/createStackStep2.png)
 

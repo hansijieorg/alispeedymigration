@@ -12,13 +12,13 @@ weight: 52
 ![](/images/DataSyncWithDMS/createTask1.png)
 在创建任务的界面上：
 
-* "任务标识符"输入：ali-migration-task
+* "任务标识符"输入：ali-migration-task-你的姓名前缀
 
-* "复制实例"下拉列表里选择：bcdrdms-vpc开头的实例
+* "复制实例"下拉列表里选择：bcdrdms-vpc开头、并对应你的编号的实例
 
-* "源数据库终端节点"下拉列表里选择：source-db
+* "源数据库终端节点"下拉列表里选择：source-db-你的姓名拼音
 
-* "目标数据库终端节点"下拉列表里选择：target-db
+* "目标数据库终端节点"下拉列表里选择：target-db-你的姓名拼音
 
 * "迁移类型"下拉列表里选择：迁移现有数据并复制持续更改
 

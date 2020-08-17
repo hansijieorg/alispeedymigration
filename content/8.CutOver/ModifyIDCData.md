@@ -22,6 +22,6 @@ weight: 81
 3.在左边菜单中选择"文章"，在右边点击【写文章】按钮。
 ![](/images/Failover/addnewblog.png)
 
-4.随意写些内容以后，点击【发布】按钮。
+4.随意写些内容以后，点击【发布】按钮。并在主页上（http://SLB的公网IP地址/wordpress）能显示改新的文章。
 ![](/images/Failover/publishnewblog.png)
 

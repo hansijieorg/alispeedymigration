@@ -1,10 +1,39 @@
 ﻿---
 title: "使用 AWS DMS 进行数据迁移"
 chapter: false
-weight: 113
+weight: 112
 ---
 
 ## 部署 使用 AWS DMS 进行数据迁移
+
+#### 创建复制实例
+
+1.下载CloudFormation脚本到本地电脑。
+{{%attachments title="下载链接:" /%}}
+
+2.进入印度region的Cloudformation界面：https://ap-south-1.console.aws.amazon.com/cloudformation/home?region=ap-south-1
+
+3.点击【创建堆栈】按钮，选择"Upload a template file"，并把第一步下载的CloudFormation脚本上传，点击【Next】按钮。
+
+4.在指定堆栈的界面上，按照如下内容输入以后，点击【Next】按钮。
+
+* Stack name：aliworkshop-dms-<你的姓名拼音>
+
+* DMSInstanceName：bcdrdms-<你的姓名拼音>
+
+* DMSSubnetGroupName：dmssubnet-<你的姓名拼音>
+
+* VpcCidr：把缺省值中的第二个0换成对应你的编号（10.x.0.0/16）
+
+* SubnetCidr1：把缺省值中的第二个0换成对应你的编号（10.x.0.0/24）
+
+* SubnetCidr2：把缺省值中的第二个0换成对应你的编号（10.x.32.0/24）
+
+* SubnetCidr3：把缺省值中的第二个0换成对应你的编号（10.x.64.0/24）
+
+* SubnetCidr4：把缺省值中的第二个0换成对应你的编号（10.x.96.0/24）
+
+5.点击【Next】，并点击【Create Stack】按钮，从而开始创建DMS复制实例。
 
 #### 创建终端节点
 

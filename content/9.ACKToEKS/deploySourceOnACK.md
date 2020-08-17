@@ -49,7 +49,7 @@ chmod u+x create-src.sh
 
 执行下面的命令，获得生成的SLB的信息：
 ```bash
-kubectl get svc -n 2048-game2
+kubectl get svc -n 2048-game你的编号
 ```
 
 其输出如下图所示，可以看到生成的SLB的ip地址。

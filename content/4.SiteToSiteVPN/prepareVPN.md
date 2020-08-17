@@ -57,7 +57,11 @@ sleep 10
 aliyun ecs AllocatePublicIpAddress --InstanceId $INSTANCE_ID
 ```
 
-4.阿里云的VPN实例的安全组已经添加了相应的、针对500和4500端口的规则。另外，需要再执行下面的命令，把AWS的网段加入阿里云上所使用的安全组：
+4.阿里云的VPN实例的安全组已经添加了相应的、针对500和4500端口的规则。另外，需要再执行下面的命令，把AWS的网段加入阿里云上所使用的安全组。
+{{% notice note %}}
+注意把这里的参数值里的x替换为对应的编号。
+{{% /notice  %}}
+
 ```bash
 aliyun ecs AuthorizeSecurityGroup \
 --RegionId cn-zhangjiakou \

@@ -8,7 +8,7 @@ weight: 32
 
 在阿里云上部署了应用服务器和负载均衡器以后，按照下面的步骤部署RDS，并进行应用系统的配置：
 
-1.执行下面的命令，创建RDS，下面的"x"改为你对应的编号，注意该命令会执行一段时间才会返回，请耐心等候：
+1.执行下面的命令，创建RDS，注意该命令会执行一段时间（大约3-4分钟左右）才会返回，请耐心等候：
 ```bash
 RDSINFO=`aliyun rds CreateDBInstance \
 --RegionId cn-zhangjiakou \
@@ -61,8 +61,9 @@ RDSCONN=`echo $RDSINFO | jq .ConnectionString | sed 's/\"//g'`
 echo $RDSCONN
 ```
 
-2.根据之前获得的Wordpress应用服务器的公网IP地址，SSH登录到该服务器，修改相应的配置：
+2.根据之前获得的Wordpress应用服务器的公网IP地址，SSH登录到该服务器，修改相应的配置。注意把下面的“创建出来的RDS的连接字符串”改为上一步所获得的RDS的连接字符串：
 ```bash
+ssh -i aliworkshop-你的姓名拼音.pem root@<Wordpress应用服务器的公网ip>
 cd /usr/share/nginx/html/wordpress
 sed -i "s/localhost/创建出来的RDS的连接字符串/g" wp-config.php
 mysql -h 创建出来的RDS的连接字符串 -u root -pInitial-1 < ~/wordpress.sql

@@ -45,6 +45,7 @@ kubectl config get-contexts
 ```bash
 kubectl config use-context <EKS集群的namespace>
 kubectl config current-context
+kubectl get nodes
 ```
 
 4.创建backup location。
@@ -78,4 +79,4 @@ kubectl get svc -n 2048-game<编号>
 如果一切正常，会看到一个ALB被创建出来。如下图所示。
 ![](/images/ACKToEKS/restoreOnEKSWithALB.png)
 
-打开浏览器，并在地址来里输入该ALB的名称，确认能打开应用系统，从而完成了ACK上的应用到EKS上的迁移。
+打开浏览器，并在地址来里输入该ALB的名称，确认能打开应用系统（如果不能打开，请关闭VPN以后再次尝试），从而完成了ACK上的应用到EKS上的迁移。

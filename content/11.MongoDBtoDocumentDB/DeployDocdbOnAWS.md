@@ -1,7 +1,7 @@
 ﻿---
 title: "部署 DocumentDB 数据库"
 chapter: false
-weight: 112
+weight: 111
 ---
 
 ## 部署 Amazon DocumentDB 数据库

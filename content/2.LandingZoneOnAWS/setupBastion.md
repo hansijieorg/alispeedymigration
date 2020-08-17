@@ -10,7 +10,7 @@ weight: 23
 
 1.进入EC2控制台：https://cn-northwest-1.console.amazonaws.cn/ec2/v2/home?region=cn-northwest-1#Instances:search=BastionInstance;sort=launchTime
 
-在界面上，找到名称为：BastionInstance的EC2，并找到其对应的公网ip地址。
+在界面上，找到名称包含BastionInstance、并且你所对应的编号的EC2，并找到其对应的公网ip地址。
 
 2.使用准备阶段创建的target-ningxia-key密钥，SSH登录到该堡垒机，并运行下面的命令配置demouser的Access Key和Access Secret Key。
 ```bash

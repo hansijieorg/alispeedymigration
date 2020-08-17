@@ -1,12 +1,15 @@
 ﻿---
-title: "在阿里云上部署 MongoDB"
+title: "附录：如何在阿里云上部署 MongoDB"
 chapter: false
-weight: 111
+weight: 113
 ---
 
-## 在阿里云上部署 MongoDB
+## 附录：在阿里云上部署 MongoDB
 
-本次实验会创建一个阿里云 MongoDB 数据库实例并写入测试数据。步骤如下：
+本文档展示了如何创建一个阿里云 MongoDB 数据库实例并写入测试数据。步骤如下：
+{{% notice note %}}
+注意，这里只是展示如何在阿里云上创建MongoDB，并不需要真实的去创建。
+{{% /notice  %}}
 
 1. 登录阿里云控制台：[https://signin.aliyun.com/login.htm](https://signin.aliyun.com/login.htm)
 

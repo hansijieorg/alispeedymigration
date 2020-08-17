@@ -16,7 +16,8 @@ weight: 92
 {{% /notice  %}}
 
 ```bash
-wget wget https://github.com/vmware-tanzu/velero/releases/download/v1.4.0/velero-v1.4.0-linux-amd64.tar.gz
+cd ~/
+wget https://github.com/vmware-tanzu/velero/releases/download/v1.4.0/velero-v1.4.0-linux-amd64.tar.gz
 tar -xvf velero-v1.4.0-linux-amd64.tar.gz
 cd velero-v1.4.0-linux-amd64
 sudo cp velero /usr/local/bin/
@@ -50,6 +51,7 @@ aws iam create-access-key --user-name velero --profile default
 
 把创建用户velero的时候输出的access key id以及secret key记录下来，分别填入下面的<access key id>和<secret key>部分。
 ```bash
+cd ~/
 echo "[default]" >> credentials-velero
 echo "aws_access_key_id = <access key id>" >> credentials-velero
 echo "aws_secret_access_key = <secret key>" >> credentials-velero
