@@ -23,6 +23,12 @@ weight: 112
 
 * DMSSubnetGroupName：dmssubnet-<你的姓名拼音>
 
+* BastionInstanceTag：BastionInstance-<你的姓名拼音>
+
+* EC2InstancePrivateIP：把把缺省值中的第二个0换成对应你的编号（10.x.0.5）
+
+* KeyPairName：选择一个已经存在的key pair，如果没有则创建一个新的并下载即可。
+
 * VpcCidr：把缺省值中的第二个0换成对应你的编号（10.x.0.0/16）
 
 * SubnetCidr1：把缺省值中的第二个0换成对应你的编号（10.x.0.0/24）
@@ -34,6 +40,18 @@ weight: 112
 * SubnetCidr4：把缺省值中的第二个0换成对应你的编号（10.x.96.0/24）
 
 5.点击【Next】，并点击【Create Stack】按钮，从而开始创建DMS复制实例。
+
+#### 获取阿里云上的MongoDB的相关信息
+
+```bash
+MONGO=`aliyun dds DescribeDBInstances | jq .DBInstances | jq .DBInstance | jq .[0] | jq .DBInstanceId | sed 's/\"//g'`
+aliyun dds ModifySecurityIps --DBInstanceId $MONGO --SecurityIps <DMS实例的公网ip地址>
+aliyun dds AllocatePublicNetworkAddress --DBInstanceId $MONGO
+PUBHRI=`aliyun dds DescribeShardingNetworkAddress \
+--DBInstanceId $MONGO \
+| jq .NetworkAddresses | jq .NetworkAddress | jq .[2] | jq .NetworkAddress | sed 's/\"//g'
+echo $PUBHRI
+```
 
 #### 创建终端节点
 
@@ -54,8 +72,7 @@ weight: 112
         
         * “源引擎”选择：mongodb
         
-        * “服务器名称”输入: 之前所获得的阿里云MongoDB的外网连接地址里的域名
-        ![](/images/MongoDB2DocDB/MongoDBPublicAccess.png)
+        * “服务器名称”输入: 上一步所获得的阿里云MongoDB的外网连接地址里的域名
         
         * “端口”输入：`3717`
         
@@ -63,7 +80,7 @@ weight: 112
         
         * “用户名”输入：`root`
         
-        * “密码”输入：`Aliyun123`
+        * “密码”输入：`Initial-1`
                 
         * “数据库名称”输入：`admin`
 
@@ -100,7 +117,7 @@ weight: 112
         
         * “用户名”输入：`root`
         
-        * “密码”输入：`Awsaws123`
+        * “密码”输入：`Initial-1`
         
         * “数据库名称”输入：`admin`
 
@@ -108,32 +125,6 @@ weight: 112
         ![](/images/MongoDB2DocDB/DestEndpoint.png)
 
         * 点击【创建终端节点】
-
-####  创建复制实例
-
-按照以下步骤创建复制实例：
-
-1. 打开印度Region的DMS控制台：[https://ap-south-1.console.aws.amazon.com/dms/v2/home?region=ap-south-1#replicationInstances](https://ap-south-1.console.aws.amazon.com/dms/v2/home?region=ap-south-1#replicationInstances)
-
-2. 创建复制实例
-
-    * 在左边菜单上选择【复制实例】菜单，然后在右边的界面上选择【创建复制实例】按钮
-
-        ![](/images/MongoDB2DocDB/CreateReplicaInstance.png)
-    
-    * 在创建复制实例界面上：
-        
-        * “名称”输入：`lab-replication`
-        
-        * “描述”输入：`lab-replication`
-        
-        * “VPC”选择：如果只有一个选项就选择默认的一个，如果有多个选择跟DocumentDB实例同一个vpc
-        ![](/images/MongoDB2DocDB/ReplicationVPC.png)
-        
-        * 其他保留缺省值
-        ![](/images/MongoDB2DocDB/CreateReplicaInstance2.png)
-
-        * 点击【创建】按钮
 
 #### 测试终端节点连接
 
@@ -166,7 +157,7 @@ weight: 112
     
     * “任务标识符”输入：`lab-migration`
     
-    * “复制实例”选择：lab-replication - vpc-xxxxxxx
+    * “复制实例”选择：bcdrdms-<你的姓名拼音>- vpc-xxxxxxx
     
     * “源数据库终端节点”选择：ali-endpoint
     
@@ -174,7 +165,7 @@ weight: 112
     
     * “迁移类型”选择：迁移现有数据并复制正在进行的更改
     
-    * “表映像”选择：引导式UI，点击【添加新选择规则】，“架构”选择：输入架构，
+    * “表映像”选择：引导式UI，点击【添加新选择规则】，“架构”选择：输入架构
     
     * 其他保留缺省值
     ![](/images/MongoDB2DocDB/CreateMigrationJobInfo-1.png)

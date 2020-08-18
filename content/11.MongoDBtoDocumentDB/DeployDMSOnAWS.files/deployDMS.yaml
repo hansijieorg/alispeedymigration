@@ -41,6 +41,18 @@ Parameters:
     Default: 10.0.96.0/24
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.  
+  KeyPairName:
+    Description: Name of SSH KeyPair
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: Provide the name of an existing SSH key pair
+  EC2InstancePrivateIP:
+    Description: Private IP Address
+    Type: String
+    Default: 10.0.0.5
+  BastionInstanceTag:
+    Description: Tag value of Bastion Server
+    Type: String
+    Default: BastionInstance#
   DMSInstanceName:
     Description: DMS instance Name
     Type: String
@@ -216,3 +228,66 @@ Resources:
         - !Ref WordpressSubnet2
         - !Ref WordpressSubnet3
         - !Ref WordpressSubnet4
+        
+  BastionVPNSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    DependsOn: BCDRVPC
+    Properties:
+      GroupDescription: BastionHost - 22/ssh
+      VpcId: !Ref BCDRVPC
+      Tags:
+        - Key: Name
+          Value: SGBastionVPN
+      SecurityGroupIngress:
+        - IpProtocol: '-1'
+          FromPort: '-1'
+          ToPort: '-1'
+          CidrIp: 192.168.0.0/16
+        - IpProtocol: '-1'
+          FromPort: '-1'
+          ToPort: '-1'
+          CidrIp: !Ref VpcCidr
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          Description: for ssh
+  InstanceNetworkInterface:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      Description: ENI
+      SubnetId: !Ref WordpressSubnet1
+      PrivateIpAddress: !Ref EC2InstancePrivateIP
+      GroupSet: 
+        - !Ref BastionVPNSecurityGroup
+      Tags:
+        - Key: Name
+          Value: Bastion ENI
+
+  BastionVPNEC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: t3.large
+      ImageId: ami-0ebc1ac48dfd14136
+      KeyName: !Ref KeyPairName
+      NetworkInterfaces:
+        - NetworkInterfaceId: !Ref InstanceNetworkInterface
+          DeviceIndex: 0
+      SourceDestCheck: true
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeType: gp2
+            VolumeSize: 20
+            DeleteOnTermination: true
+      Tags:
+        - Key: Name
+          Value: !Ref BastionInstanceTag
+      UserData: 
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # Updates & Install needed programs
+          yum update -y 
+
+
+
