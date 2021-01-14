@@ -6,7 +6,12 @@ weight: 120
 
 ## 迁移 PostgreSQL 到 Amazon RDS for PostgreSQL
 
-本实验描述了如何阿里云 PostgreSQL 数据库迁移到 Amazon RDS for PostgreSQ 里，其中包括以下步骤：
+{{% notice note %}}
+本实验需要使用 Amazon RDS for PostgreSQL 10.4 版本
+{{% /notice  %}}
+
+
+本实验描述了如何阿里云 PostgreSQL 数据库迁移到 Amazon RDS for PostgreSQL 里，其中包括以下步骤：
 
 1. 准备阿里云 PostgreSQL 环境
 
