@@ -7,7 +7,7 @@ weight: 120
 ## 迁移 PostgreSQL 到 Amazon RDS for PostgreSQL
 
 {{% notice note %}}
-本实验需要使用 Amazon RDS for PostgreSQL 10.4 版本
+本实验需要使用 Amazon RDS for PostgreSQL 10.4 或更新版本
 {{% /notice  %}}
 
 
